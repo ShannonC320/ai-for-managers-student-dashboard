@@ -14,6 +14,18 @@ Populated review screens fit 1440px desktop, 390px phone and 320px narrow-phone 
 
 The old 8-hour/3-task heavy-workload claim is removed. Three deadlines are explicitly clustered; capacity comparisons use supplied daily hours or state that available time is unknown. No recommendation silently edits task fields. New review records retain only the latest exchange and decision, not a complete history.
 
+## Public deployment of this revision
+
+- Application commit: `4dbd4e9` — pushed to the existing `main` branch.
+- Successful test/build/deploy run: https://github.com/ShannonC320/ai-for-managers-student-dashboard/actions/runs/33998163841
+- Same public site: https://shannonc320.github.io/ai-for-managers-student-dashboard/
+- An independent HTTPS request returned 200 and the new repository-prefixed assets (`index-BNVrwgyk.js`, `index-CnmE1mdt.css`). No Pages/workflow settings needed changing.
+- Public Chromium checks preserved the previous QA profile, two goals and legacy completed task. Profile goal add/remove/edit/save and full page navigation confirmed persistence.
+- On the public site, generated/copied an import prompt, approved sample proposals with a prerequisite, generated a planning prompt, imported a deliberately flawed sample plan, observed dependency/capacity warnings, reordered/moved work, and saved a student explanation. A fresh document load retained original AI order and the distinct approved plan.
+- Completing the prerequisite and editing effort/priority triggered **Needs review**. Duplicate opened an independent draft requiring a new date; cancel left the original intact. Home reflected the revised shared data. Direct Home/Profile/Planner document navigation worked.
+- The production console log was empty after these checks. Hosted content also showed no horizontal overflow at the available 459px content width. Broader 320/390/1440 checks were performed locally as described above.
+- Samples exist only in the QA browser's local storage; none are seeded in source or distributed to students. External AI response fixtures test software behavior, not the quality of a live model.
+
 ## Student-builder pilot required before course acceptance
 
 1. In your normal browser, verify your existing name, major, year and multiple goals; edit/save and refresh. Verify old tasks still exist.
