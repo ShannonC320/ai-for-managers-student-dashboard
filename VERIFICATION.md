@@ -38,3 +38,21 @@ The isolated production-preview browser storage contains one completed QA sample
 - Explain that storage is browser/device/origin-specific, has no cloud backup or multi-tab synchronization, and does not transfer automatically from localhost to a hosted address.
 
 Hosting, GitHub workflows, authentication, AI APIs, and later-week capabilities were not added.
+
+## GitHub Pages deployment verification — September 5, 2026
+
+This later deployment step adds hosting configuration only; the Week 1–2 application source and browser-storage behavior are unchanged.
+
+- Public repository: https://github.com/ShannonC320/ai-for-managers-student-dashboard
+- Public dashboard: https://shannonc320.github.io/ai-for-managers-student-dashboard/
+- Vite asset base: `/ai-for-managers-student-dashboard/`.
+- GitHub Pages source: GitHub Actions. Pushes to `main` test, build, and deploy; pull requests test and build without deploying.
+- Original deployment run: https://github.com/ShannonC320/ai-for-managers-student-dashboard/actions/runs/33980933049 — succeeded on attempt 2. The first attempt reached publishing before Pages was enabled; rerunning the failed job after enabling Pages resolved the 404.
+- All 28 local tests and the production build passed again. GitHub's fresh Linux install, tests, build, artifact upload, and Pages publishing also succeeded.
+- Independent public HTTPS request returned 200 with repository-prefixed JavaScript and CSS asset URLs.
+- Interactive checks at the public HTTPS address (not localhost): profile create/edit; multiple goals and removing an empty goal field; saved fields/goals after refresh; personalized Home; task create/edit; manual priority change; decimal hours; completion; workload flag and completed-work exclusion; task persistence after refresh.
+- Direct `#/home`, `#/profile`, and `#/tasks` links each rendered correctly after refresh.
+- No production console errors or warnings were recorded in the available Chromium browser.
+- The public URL was also launched in the user's normal default browser, and the user confirmed: "Yes, it loads correctly." That external window cannot be inspected by the connected browser tools; this confirmation complements the automated public-site checks. Safari/mobile-device checks remain recommended.
+
+The browser used for public-site QA contains a clearly labeled QA profile and one completed QA task in its own local storage. These records are not application defaults, repository contents, or shared team data. Opening the public site in a different browser starts with that browser's own records.

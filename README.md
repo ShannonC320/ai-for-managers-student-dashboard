@@ -46,7 +46,7 @@ Data stays in the same browser profile on the same website origin. It does not s
 - Profile: https://shannonc320.github.io/ai-for-managers-student-dashboard/#/profile
 - Planner: https://shannonc320.github.io/ai-for-managers-student-dashboard/#/tasks
 
-The public address becomes available after GitHub Pages is enabled and the first deployment succeeds. The repository and website are public. Each visitor's profile and tasks remain only in that visitor's browser; they are never committed to Git or uploaded to GitHub.
+The dashboard is deployed through GitHub Pages. The repository and website are public. Each visitor's profile and tasks remain only in that visitor's browser; they are never committed to Git or uploaded to GitHub.
 
 Vite's `base` is `/ai-for-managers-student-dashboard/`, so generated assets load from the repository's Pages path. Keep the existing fragment routes (`#/home`, `#/profile`, `#/tasks`); do not replace them with server-dependent routes. The app uses system fonts and has no runtime backend or external API.
 
