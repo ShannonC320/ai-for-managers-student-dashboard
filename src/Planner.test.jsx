@@ -78,10 +78,10 @@ describe('planner interactions and persistence', () => {
 
   it('shows workload flags and removes completed tasks from workload', () => {
     writeTasks([sample({ hours: 8 })]); render(<App />);
-    expect(screen.getByText('Potentially heavy workload')).toBeInTheDocument();
+    expect(screen.getByText('Today: 8 hours estimated; available time unknown.')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('checkbox', { name: 'Mark Case brief complete' }));
     expect(screen.queryByText('Potentially heavy workload')).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: '0 hours · 0 tasks' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '0 hours due · 0 deadlines' })).toBeInTheDocument();
   });
 
   it('validates blanks, accepts zero and decimal hours, Unicode and literal markup, and cancels edits', () => {
@@ -147,12 +147,12 @@ describe('calendar and planning rules', () => {
   });
 
   it('counts hours and deadlines at the exact flag boundaries, excluding overdue and completed', () => {
-    expect(summarize([sample({ hours: 7.99 })], today).heavy).toBe(false);
-    expect(summarize([sample({ hours: 8 })], today).heavy).toBe(true);
+    expect(summarize([sample({ hours: 7.99 })], today).clustered).toBe(false);
+    expect(summarize([sample({ hours: 8 })], today).clustered).toBe(false);
     const tasks = [sample({ hours: 1.25 }), sample({ id: 'two', hours: .75, dueDate: dateAfter(today, 1) }), sample({ id: 'three', hours: 0 }), sample({ id: 'old', hours: 12, dueDate: dateAfter(today, -1) }), sample({ id: 'done', hours: 9, completed: true }), sample({ id: 'later', hours: 6, dueDate: dateAfter(today, 2) })];
-    expect(summarize(tasks, today)).toMatchObject({ heavy: true, hours: 2, nearCount: 3, overdue: 1, overdueHours: 12, completed: 1, totalHours: 20 });
+    expect(summarize(tasks, today)).toMatchObject({ clustered: true, hours: 2, nearCount: 3, overdue: 1, overdueHours: 12, completed: 1, totalHours: 20 });
     expect(summarize(tasks, today).days).toHaveLength(7);
-    expect(summarize([], today)).toMatchObject({ totalHours: 0, heavy: false, completed: 0 });
+    expect(summarize([], today)).toMatchObject({ totalHours: 0, clustered: false, completed: 0 });
   });
 
   it.each(['', ' ', '-1', 'Infinity', 'NaN', '1001'])('rejects invalid hours %s', hours => {

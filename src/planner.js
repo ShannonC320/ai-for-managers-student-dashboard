@@ -36,7 +36,7 @@ export function summarize(tasks, today = localDate()) {
     const date = dateAfter(today, index);
     const items = open.filter(task => task.dueDate === date);
     const total = items.reduce((sum, task) => sum + task.hours, 0);
-    return { date, count: items.length, hours: total, heavy: total >= 8 || items.length >= 3 };
+    return { date, count: items.length, hours: total, clustered: items.length >= 3 };
   });
   return {
     open: open.length,
@@ -44,7 +44,7 @@ export function summarize(tasks, today = localDate()) {
     overdueHours: open.filter(task => task.dueDate < today).reduce((sum, task) => sum + task.hours, 0),
     completed: tasks.length - open.length,
     upcoming: open.filter(task => task.dueDate >= today).length,
-    hours, nearCount: near.length, heavy: hours >= 8 || near.length >= 3,
+    hours, nearCount: near.length, clustered: near.length >= 3,
     totalHours: open.reduce((sum, task) => sum + task.hours, 0), days,
   };
 }
@@ -71,8 +71,9 @@ export function readTasks() {
         || !['title', 'category', 'notes'].every(key => typeof task[key] === 'string')
         || typeof task.hours !== 'number' || typeof task.completed !== 'boolean' || validateTask(task)) throw new Error('Invalid task');
       ids.add(task.id);
+      if (task.dependencies !== undefined && (!Array.isArray(task.dependencies) || task.dependencies.some(id => typeof id !== 'string'))) throw new Error('Invalid dependencies');
     }
-    return { tasks: data.tasks, error: '' };
+    return { tasks: data.tasks.map(task => ({ ...task, dependencies: task.dependencies || [] })), error: '' };
   } catch {
     return { tasks: [], error: 'Saved tasks could not be read. Your stored data has not been replaced. Restore browser storage access or recover the saved data, then reload.' };
   }

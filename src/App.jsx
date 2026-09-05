@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import Planner from './Planner.jsx';
+import useDashboardData from './useDashboardData.js';
+import PlanningSummary from './PlanningSummary.jsx';
 
 export const STORAGE_KEY = 'ai-managers-student-profile';
 
@@ -33,7 +35,7 @@ function readProfile() {
   }
 }
 
-function Home({ profile, onOpenProfile, onOpenPlanner }) {
+function Home({ profile, onOpenProfile, onOpenPlanner, dashboard }) {
   const firstName = profile.name.trim().split(/\s+/)[0];
 
   return (
@@ -49,6 +51,8 @@ function Home({ profile, onOpenProfile, onOpenPlanner }) {
           {profile.name ? 'View your profile' : 'Set up your profile'}
         </button>
       </section>
+
+      <PlanningSummary dashboard={dashboard} onOpenPlanner={onOpenPlanner} />
 
       <section className="foundation-card" aria-labelledby="foundation-title">
         <div className="card-icon" aria-hidden="true">01</div>
@@ -190,6 +194,7 @@ function Profile({ profile, onSave }) {
 export default function App() {
   const [activePage, setActivePage] = useState(pageFromLocation);
   const [profile, setProfile] = useState(readProfile);
+  const dashboard = useDashboardData();
 
   useEffect(() => {
     if (!['#/home', '#/profile', '#/tasks'].includes(window.location.hash)) {
@@ -253,7 +258,7 @@ export default function App() {
             <span aria-hidden="true">{profile.name.charAt(0).toUpperCase() || 'S'}</span>{profile.name || 'Student'}
           </button>
         </header>
-        {activePage === 'home' ? <Home profile={profile} onOpenProfile={() => navigate('profile')} onOpenPlanner={() => navigate('tasks')} /> : activePage === 'profile' ? <Profile profile={profile} onSave={saveProfile} /> : <Planner />}
+        {activePage === 'home' ? <Home profile={profile} dashboard={dashboard} onOpenProfile={() => navigate('profile')} onOpenPlanner={() => navigate('tasks')} /> : activePage === 'profile' ? <Profile profile={profile} onSave={saveProfile} /> : <Planner dashboard={dashboard} />}
       </div>
     </div>
   );

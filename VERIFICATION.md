@@ -1,4 +1,36 @@
-# Week 2 verification — September 5, 2026
+# Bounded Week 2 AI-supported planning revision — September 5, 2026
+
+## Current automated and build results
+
+**51 tests pass across four Vitest files.** All original 28 regression cases remain; two assertions were updated only for the intentionally replaced heavy-workload rule. Vite production build passes. No dependency or lockfile changes, paid services, external API calls, credentials, backend, authentication or Week 3 features were added.
+
+Coverage includes Week 1 fields/goals/edit/save/cancel/persistence/navigation; all existing task CRUD/filter/sort/date validation; prompt generation and prerequisite closure; proposal parsing/edit/reject/approve; missing/invalid fields and duplicate-title warnings; dependency creation/cycles/missing references; independent duplication; unknown/zero/known capacity; sequence/deadline conflicts; invented/duplicate/completed plan IDs; omissions; original AI vs student order; reordering/exclusion/inclusion/reasons; explicit acceptance/rejection; stale recommendations; Home totals; legacy storage; reload/remount persistence; corrupt records and failed writes.
+
+## Current browser results
+
+Interactive development-browser checks used explicitly labeled QA samples, not a live external AI model. The existing Jane Smith profile remained intact. The sample proposal import saved nothing before approval; source/notes editing, prerequisite-first approval and rejection worked. A deliberately flawed sample recommendation scheduled dependent work first and 2.5 hours into a 2-hour budget; the dashboard flagged both conflicts. The student reordered work and moved the dependent task to tomorrow, saved an explanation/decision, then loaded a fresh document on the same origin. Original AI order and saved student plan persisted separately. Editing the task's effort produced **Needs review** in Planner and Home.
+
+Populated review screens fit 1440px desktop, 390px phone and 320px narrow-phone viewports, with no horizontal document overflow. The narrow layouts stack AI and student panels; controls remain separate and labeled. These are Chromium viewport checks, not physical-device or full accessibility certification.
+
+The old 8-hour/3-task heavy-workload claim is removed. Three deadlines are explicitly clustered; capacity comparisons use supplied daily hours or state that available time is unknown. No recommendation silently edits task fields. New review records retain only the latest exchange and decision, not a complete history.
+
+## Student-builder pilot required before course acceptance
+
+1. In your normal browser, verify your existing name, major, year and multiple goals; edit/save and refresh. Verify old tasks still exist.
+2. Use **Prepare AI Task Import** with a real, non-sensitive assignment excerpt and your course-approved external AI tool. Include one ambiguous date or missing estimate. Check that you can copy/paste without writing JSON yourself; evaluate every source/date/estimate/priority/dependency flag, edit one proposal, reject one and approve another. Confirm nothing is silently saved.
+3. Link a lower-priority reading as a prerequisite of higher-priority work. Try a circular link and resolve it. Duplicate an assignment, change its due date/details, and confirm the original remains unchanged.
+4. Use **Prepare AI Planning Prompt** with a realistic today/tomorrow time budget. Inspect what will be shared, obtain a real AI response, and judge whether its reasoning, assumptions and unscheduled work are useful. Compare importance with sequence; do not assume AI order is correct.
+5. Reorder/exclude/revise a recommendation and save an explanation. Confirm original AI output stays separate; refresh. Try rejection too. Change task hours/deadline/completion and confirm **Needs review** appears.
+6. Compare three tasks totaling 2.5 hours against blank, zero, 2-hour and 3-hour availability. Check clustered deadlines versus effort, and remember due-date buckets are not a work schedule. Check overdue work and Home totals.
+7. Use direct Home/Profile/Planner links and refresh on the public site. Check Safari/iOS or Android, keyboard-only navigation, screen-reader announcements and 200% zoom on target devices.
+
+The software tests exercise representative structured responses. They cannot establish the quality of a particular external model's recommendations or replace this instructional pilot. External-tool accounts, limits and privacy policies remain separate from the dashboard. Browser-local data has no backup or cross-device/multi-tab synchronization; QA records are local browser samples, not shipped defaults.
+
+## Historical baseline verification
+
+The sections below record the original implementation and first deployment. Their old workload thresholds and then-outstanding deployment checks are historical and are superseded by the bounded revision above.
+
+# Original Week 2 verification — September 5, 2026
 
 ## Automated checks
 
