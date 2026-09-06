@@ -33,6 +33,13 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
       }
     } catch (failure) { setError(failure.message); }
   }
+  function startOver() {
+    if (save({ ...data, response: '', proposals: [] })) {
+      setResponse('');
+      setError('');
+      setMessage('Current proposed tasks cleared. Paste a new AI response when you are ready.');
+    }
+  }
   return <details className="panel ai-feature"><summary>Prepare AI Task Import</summary>
     <ExternalAINotice />
     <p>Turn syllabus, course schedule, instructor-list, or spreadsheet-style text into proposals using an external AI tool. Review the result here before adding anything to Planner.</p>
@@ -43,7 +50,10 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
     <PromptOutput value={data.prompt} label="Task-import prompt" />
     <label>AI task response<textarea value={response} onChange={event => setResponse(event.target.value)} rows={5} maxLength={100000} placeholder="Paste the complete JSON response from your AI tool. You do not need to write code." /></label>
     <p className="muted">Parsing checks the response format; it is not AI. Parsing another response replaces the review rows below, never your saved Planner tasks. Prepared prompts and review edits stay in this browser; unprepared source/response typing is not saved.</p>
-    <button className="secondary-button" disabled={locked} type="button" onClick={parse}>Review proposed tasks</button>
+    <div className="task-actions">
+  <button className="secondary-button" disabled={locked} type="button" onClick={parse}>Review proposed tasks</button>
+  {data.proposals.length > 0 && <button className="remove-button" disabled={locked} type="button" onClick={startOver}>Start over with AI response</button>}
+</div>
     {data.proposals.length > 0 && <section aria-label="Proposed Tasks" className="proposals"><h2>Proposed Tasks</h2><p>Check dates, effort, priority, sources, and prerequisites. Approve prerequisites first. Each approval adds one task; rejecting a proposal does not delete a saved task.</p>
       {data.proposals.map(proposal => {
         const isSaved = tasks.some(task => task.id === proposal.id);
