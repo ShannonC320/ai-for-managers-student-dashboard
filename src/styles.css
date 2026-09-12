@@ -272,3 +272,24 @@ ul.review-flags { padding-left: 32px; }
   .task-toolbar, .summary-grid { grid-template-columns: minmax(0, 1fr); }
   .foundation-card { padding: 18px; gap: 12px; }
 }
+/* Week 3 Research & Verification form spacing */
+.research-form label {
+  display: block;
+  margin-top: 20px;
+}
+
+.research-form label:first-of-type {
+  margin-top: 0;
+}
+
+.research-form .field-help {
+  display: block;
+  margin: 6px 0 12px;
+  line-height: 1.5;
+}
+
+.research-form input,
+.research-form select,
+.research-form textarea {
+  margin-top: 8px;
+}
