@@ -293,3 +293,42 @@ ul.review-flags { padding-left: 32px; }
 .research-form textarea {
   margin-top: 8px;
 }
+/* Week 3 Research & Verification form layout and spacing */
+.research-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px 20px;
+}
+
+.research-form-grid label {
+  display: block;
+  min-width: 0;
+  font-size: .875rem;
+  font-weight: 600;
+}
+
+.research-form-grid small {
+  display: block;
+  margin-top: 7px;
+  color: #526774;
+  font-size: .875rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.research-form-grid input,
+.research-form-grid select,
+.research-form-grid textarea {
+  margin-top: 8px;
+}
+
+@media (max-width: 760px) {
+  .research-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+  }
+
+  .research-form-grid .span-two {
+    grid-column: auto;
+  }
+}
