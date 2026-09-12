@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { localDate, readTasks, writeTasks } from './planner.js';
 import { emptyPlanning, PLANNING_KEY, validPlanningRecord } from './planningSupport.js';
+import { readResearchRecords, writeResearchRecords } from './research.js';
 
 export function useLocalRecord(key, makeEmpty, validate) {
   const [initial] = useState(() => {
@@ -28,6 +29,9 @@ export default function useDashboardData() {
   const [tasks, setTasks] = useState(initial.tasks);
   const [today, setToday] = useState(localDate);
   const planning = useLocalRecord(PLANNING_KEY, emptyPlanning, validPlanningRecord);
+  const [initialResearch] = useState(readResearchRecords);
+  const [records, setRecords] = useState(initialResearch.records);
+  const researchError = initialResearch.error;
   useEffect(() => {
     const refresh = () => setToday(localDate());
     const timer = setInterval(refresh, 60000);
@@ -38,5 +42,9 @@ export default function useDashboardData() {
     if (initial.error) throw new Error(initial.error);
     writeTasks(next); setTasks(next);
   }
-  return { tasks, saveTasks, taskError: initial.error, today, planning };
+  function saveResearchRecords(next) {
+    if (researchError) throw new Error(researchError);
+    writeResearchRecords(next); setRecords(next);
+  }
+  return { tasks, saveTasks, taskError: initial.error, today, planning, records, saveResearchRecords, researchError };
 }
