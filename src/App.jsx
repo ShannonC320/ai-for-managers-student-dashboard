@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Planner from './Planner.jsx';
+import Research from './Research.jsx';
 import useDashboardData from './useDashboardData.js';
 import PlanningSummary from './PlanningSummary.jsx';
 
@@ -16,7 +17,7 @@ const academicYears = ['First year', 'Sophomore', 'Junior', 'Senior', 'Other'];
 
 function pageFromLocation() {
   const page = window.location.hash.slice(2);
-  return ['home', 'profile', 'tasks'].includes(page) ? page : 'home';
+  return ['home', 'profile', 'tasks', 'research'].includes(page) ? page : 'home';
 }
 
 function readProfile() {
@@ -65,7 +66,7 @@ function Home({ profile, onOpenProfile, onOpenPlanner, dashboard }) {
       </section>
       <section className="foundation-card planner-home-card">
         <div className="card-icon" aria-hidden="true">02</div>
-        <div><div className="eyebrow">Planning, Priorities & Workload</div><h2>Build your next plan</h2><p>Bring deadlines, priorities, and estimated effort together. Spot busy days and decide what needs your attention.</p><button className="secondary-button" onClick={onOpenPlanner}>Open Planner</button></div>
+        <div><div className="eyebrow">Planning, Priorities & Workload</div><h2>Build your next plan</h2><p>Bring deadlines, priorities, and estimated effort together. Spot busy days and decide wha[...]
       </section>
     </main>
   );
@@ -197,7 +198,7 @@ export default function App() {
   const dashboard = useDashboardData();
 
   useEffect(() => {
-    if (!['#/home', '#/profile', '#/tasks'].includes(window.location.hash)) {
+    if (!['#/home', '#/profile', '#/tasks', '#/research'].includes(window.location.hash)) {
       window.history.replaceState(null, '', '#/home');
     }
 
@@ -212,7 +213,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    document.title = `${activePage === 'tasks' ? 'Planner' : activePage === 'profile' ? 'Profile' : 'Home'} | AI for Managers Student Dashboard`;
+    document.title = `${activePage === 'tasks' ? 'Planner' : activePage === 'research' ? 'Research' : activePage === 'profile' ? 'Profile' : 'Home'} | AI for Managers Student Dashboard`;
     document.getElementById('main-content')?.focus();
   }, [activePage]);
 
@@ -248,17 +249,20 @@ export default function App() {
           <button className={activePage === 'tasks' ? 'nav-item active' : 'nav-item'} onClick={() => navigate('tasks')} aria-current={activePage === 'tasks' ? 'page' : undefined}>
             <span aria-hidden="true">☷</span> Planner / Tasks
           </button>
+          <button className={activePage === 'research' ? 'nav-item active' : 'nav-item'} onClick={() => navigate('research')} aria-current={activePage === 'research' ? 'page' : undefined}>
+            <span aria-hidden="true">🔍</span> Research
+          </button>
         </nav>
-        <div className="week-badge"><span>Course workspace</span><strong>Weeks 1–2 of 7</strong><p>Organize. Review. Decide.</p></div>
+        <div className="week-badge"><span>Course workspace</span><strong>Weeks 1–3 of 7</strong><p>Organize. Review. Decide.</p></div>
       </aside>
       <div className="content-area">
         <header className="topbar">
-          <span className="header-location">Student workspace <span aria-hidden="true">/</span> <strong>{activePage === 'home' ? 'Home' : activePage === 'profile' ? 'Profile' : 'Planner'}</strong></span>
+          <span className="header-location">Student workspace <span aria-hidden="true">/</span> <strong>{activePage === 'home' ? 'Home' : activePage === 'profile' ? 'Profile' : activePage === 'research' ? 'Research' : 'Planner'}</strong></span>
           <button className="student-chip" type="button" onClick={() => navigate('profile')} aria-label={`Open profile for ${profile.name || 'Student'}`}>
             <span aria-hidden="true">{profile.name.charAt(0).toUpperCase() || 'S'}</span>{profile.name || 'Student'}
           </button>
         </header>
-        {activePage === 'home' ? <Home profile={profile} dashboard={dashboard} onOpenProfile={() => navigate('profile')} onOpenPlanner={() => navigate('tasks')} /> : activePage === 'profile' ? <Profile profile={profile} onSave={saveProfile} /> : <Planner dashboard={dashboard} />}
+        {activePage === 'home' ? <Home profile={profile} dashboard={dashboard} onOpenProfile={() => navigate('profile')} onOpenPlanner={() => navigate('tasks')} /> : activePage === 'profile' ? <Profile profile={profile} onSave={saveProfile} /> : activePage === 'tasks' ? <Planner dashboard={dashboard} /> : <Research records={dashboard.records} saveRecords={dashboard.saveResearchRecords} researchError={dashboard.researchError} />}
       </div>
     </div>
   );
