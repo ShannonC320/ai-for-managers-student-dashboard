@@ -332,3 +332,17 @@ ul.review-flags { padding-left: 32px; }
     grid-column: auto;
   }
 }
+.analysis-page { min-width: 0; overflow-wrap: anywhere; }
+.analysis-page .panel { margin-bottom: 24px; }
+.analysis-page label:not(.review-check) { display: block; font-weight: 600; margin: 18px 0; }
+.analysis-table { max-width: 100%; overflow-x: auto; margin-top: 20px; }
+.analysis-table table { width: 100%; border-collapse: collapse; text-align: left; }
+.analysis-table th, .analysis-table td { border-bottom: 1px solid #cad6dd; padding: 12px; min-width: 110px; }
+.analysis-table th { background: #edf5f8; min-width: 155px; overflow-wrap: normal; }
+.analysis-table th:first-child { min-width: 180px; }
+.analysis-table button { text-align: left; font-size: .9rem; padding: 8px 6px; }
+.analysis-table caption { text-align: left; font-weight: 600; padding: 10px; }
+.analysis-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: 12px; }
+.analysis-summary .proposal-card { margin: 0; }
+.analysis-summary dl > div { display: flex; justify-content: space-between; gap: 12px; }
+.analysis-page dd { margin: 4px 0 14px; }

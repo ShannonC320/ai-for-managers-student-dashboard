@@ -124,7 +124,14 @@ export default function Research({ records, saveRecords, researchError }) {
                     <option key={value}>{value}</option>
                   ))}
                 </select>
-                <small>Pending: you have not yet verified this claim. Once you check a source, select Verified, Partly verified, or Not verified.</small>
+                <small>{
+                  {
+                    Pending: 'Pending: verification is incomplete. Check a source before selecting a final status.',
+                    Verified: 'Verified: the source supports the full claim.',
+                    'Partly verified': 'Partly verified: only part of the claim is supported or qualifications remain.',
+                    'Not verified': 'Not verified: the evidence does not adequately support the claim.',
+                  }[draft.status]
+                }</small>
               </label>
 
               <label className="span-two">

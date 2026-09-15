@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Planner from './Planner.jsx';
 import Research from './Research.jsx';
+import Analysis from './Analysis.jsx';
 import useDashboardData from './useDashboardData.js';
 import PlanningSummary from './PlanningSummary.jsx';
 
@@ -17,7 +18,7 @@ const academicYears = ['First year', 'Sophomore', 'Junior', 'Senior', 'Other'];
 
 function pageFromLocation() {
   const page = window.location.hash.slice(2);
-  return ['home', 'profile', 'tasks', 'research'].includes(page) ? page : 'home';
+  return ['home', 'profile', 'tasks', 'research', 'analysis'].includes(page) ? page : 'home';
 }
 
 function readProfile() {
@@ -358,7 +359,7 @@ export default function App() {
 
   useEffect(() => {
     if (
-      !['#/home', '#/profile', '#/tasks', '#/research'].includes(
+      !['#/home', '#/profile', '#/tasks', '#/research', '#/analysis'].includes(
         window.location.hash
       )
     ) {
@@ -381,7 +382,7 @@ export default function App() {
 
   useEffect(() => {
     document.title = `${
-      activePage === 'tasks'
+      activePage === 'analysis' ? 'Analysis' : activePage === 'tasks'
         ? 'Planner'
         : activePage === 'research'
           ? 'Research'
@@ -466,11 +467,18 @@ export default function App() {
           >
             <span aria-hidden="true">🔍</span> Research
           </button>
+          <button
+            className={activePage === 'analysis' ? 'nav-item active' : 'nav-item'}
+            onClick={() => navigate('analysis')}
+            aria-current={activePage === 'analysis' ? 'page' : undefined}
+          >
+            <span aria-hidden="true">▤</span> Analysis
+          </button>
         </nav>
 
         <div className="week-badge">
           <span>Course workspace</span>
-          <strong>Weeks 1–3 of 7</strong>
+          <strong>Weeks 1–4 of 7</strong>
           <p>Organize. Review. Decide.</p>
         </div>
       </aside>
@@ -480,7 +488,7 @@ export default function App() {
           <span className="header-location">
             Student workspace <span aria-hidden="true">/</span>{' '}
             <strong>
-              {activePage === 'home'
+              {activePage === 'analysis' ? 'Analysis' : activePage === 'home'
                 ? 'Home'
                 : activePage === 'profile'
                   ? 'Profile'
@@ -514,6 +522,8 @@ export default function App() {
           <Profile profile={profile} onSave={saveProfile} />
         ) : activePage === 'tasks' ? (
           <Planner dashboard={dashboard} />
+        ) : activePage === 'analysis' ? (
+          <Analysis />
         ) : (
           <Research
             records={dashboard.records}

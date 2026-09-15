@@ -100,3 +100,25 @@ This later deployment step adds hosting configuration only; the Week 1–2 appli
 - The public URL was also launched in the user's normal default browser, and the user confirmed: "Yes, it loads correctly." That external window cannot be inspected by the connected browser tools; this confirmation complements the automated public-site checks. Safari/mobile-device checks remain recommended.
 
 The browser used for public-site QA contains a clearly labeled QA profile and one completed QA task in its own local storage. These records are not application defaults, repository contents, or shared team data. Opening the public site in a different browser starts with that browser's own records.
+# Undergraduate Week 4 — local implementation verification
+
+Implemented against synchronized Week 3 baseline `22136b8`.
+
+- Added Analysis at `#/analysis` with the DATA → ANALYZE → REVIEW → DECIDE cycle. Home content and existing storage keys are unchanged.
+- CSV parsing supports quoted commas, escaped quotes, multiline fields, CRLF, and blank lines. Invalid headings, quoting, or record widths produce feedback and retain the previous dataset.
+- Numeric summaries use nonblank plain numeric values; mixed text columns are not treated as numeric. Sorting toggles ascending/descending and leaves blank values last. No charts or advanced statistics were added.
+- The external AI prompt includes the loaded dataset, name, management question, evidence requirements, observation/explanation distinction, causal limitations, and additional-information guidance. Pasted AI output creates no records.
+- Students explicitly add/edit/delete Analysis Records. Deletion uses an inline confirmation consistent with Research and Planner. Additional information is required only when Yes is selected.
+- All four decision responses and the responsibility acknowledgment are required to save. Editing a decision response clears the acknowledgment. Unsaved decision edits do not replace the saved decision.
+- Analysis uses a separate versioned browser-local key, `ai-managers-student-analysis-v1`. Dataset name/question save as edited; loaded data, saved records, and saved decisions survive navigation/reload. Prompts and pasted AI output are temporary. Unreadable data is protected from replacement; storage write errors are reported.
+- Research had static Pending helper text. The targeted correction now gives status-specific guidance for Pending, Verified, Partly verified, and Not verified; all four are tested.
+
+## Verification results
+
+- Existing suite before new tests: **52/52 passed**.
+- Full suite: **71/71 passed**, across five test files (`node node_modules/vitest/vitest.mjs run`, equivalent to the existing test script).
+- Production build: **passed** (`node node_modules/vite/bin/vite.js build`, equivalent to the existing build script).
+- Acceptance checks 1–19 are covered by component/unit tests: all five destinations; Coastal Life 8 records/7 columns; all six numeric summaries; two-way numeric sorting; prompt contents; no automatic AI acceptance; multiple record creation/editing/deletion; conditional information; acknowledgment gating; persistence; unchanged Weeks 1–3 storage.
+- Acceptance check 20: local headless Edge browser at 375px and 1280px had document widths equal to viewport widths. At 375px, the table had a 301px viewport and 770px scrollable content. A full-page mobile screenshot was inspected; panels, fields, and decision acknowledgment remained usable.
+- No implementation blocker. Physical-device/touch behavior and clipboard transfer to a course-approved external AI tool remain manual checks; clipboard success and error handling use the browser Clipboard API with a manual text-selection fallback. No external AI service is called.
+- This verification is local; no deployment or push was performed.
