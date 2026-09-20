@@ -272,6 +272,25 @@ ul.review-flags { padding-left: 32px; }
   .task-toolbar, .summary-grid { grid-template-columns: minmax(0, 1fr); }
   .foundation-card { padding: 18px; gap: 12px; }
 }
+
+/* Week 5 Workflows & Automation */
+.workflows-page { min-width: 0; overflow-wrap: anywhere; }
+.workflows-page .panel { margin-bottom: 24px; }
+.workflows-page label:not(.review-check) { display: block; font-weight: 600; margin: 18px 0; }
+.workflow-steps, .test-situation-list { list-style: none; padding: 0; }
+.workflow-steps > li { margin-top: 16px; }
+.workflow-steps p { white-space: pre-wrap; }
+.test-situation-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 20px 0; }
+.test-situation-list li { display: flex; justify-content: space-between; gap: 12px; padding: 12px; border: 1px solid #cad6dd; border-radius: 8px; }
+.test-situation-list span { color: #526774; font-size: .875rem; }
+.workflow-test-records { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.workflow-test-records .proposal-card { margin-top: 0; min-width: 0; }
+.workflow-test-records dt, .accepted-plan dt { font-weight: 700; margin-top: 12px; }
+.workflow-test-records dd, .accepted-plan dd { margin: 4px 0 12px; white-space: pre-wrap; }
+@media (max-width: 760px) {
+  .test-situation-list, .workflow-test-records { grid-template-columns: minmax(0, 1fr); }
+  .test-situation-list li { flex-direction: column; }
+}
 /* Week 3 Research & Verification form spacing */
 .research-form label {
   display: block;
