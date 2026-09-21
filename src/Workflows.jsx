@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { ExternalAINotice, PromptOutput } from './PlanningControls.jsx';
 import {
-  WORKFLOWS_KEY, HANDLERS, TEST_SITUATIONS, TEST_OUTCOMES, readWorkflows,
+  WORKFLOWS_KEY, HANDLERS, TEST_SITUATIONS, TEST_OUTCOMES, ROUTES, runWorkflow, readWorkflows,
   emptyStep, emptyTest, emptyEvaluation, validStep, validTest, validEvaluation, workflowPrompt,
 } from './workflows.js';
 
@@ -12,6 +12,16 @@ const evaluationFields = [
   ['changes', 'What did you change or what would you change?'],
   ['rationale', 'Why is the final workflow an appropriate management decision?'],
 ];
+
+function AutomationResult({ result }) {
+  return <section aria-label="Automation Result"><h3>Automation Result</h3><dl>
+    <dt>Guest Issue</dt><dd>{result.guestIssue}</dd>
+    <dt>Issue Category</dt><dd>{result.category}</dd>
+    <dt>Routed To</dt><dd>{result.routedTo}</dd>
+    <dt>Human Review</dt><dd>{result.humanReview ? 'Yes' : 'No'}</dd>
+    <dt>Status</dt><dd>{result.status}</dd>
+  </dl></section>;
+}
 
 export default function Workflows() {
   const [initial] = useState(readWorkflows);
@@ -69,10 +79,16 @@ export default function Workflows() {
   }
   function saveTest(event) {
     event.preventDefault();
-    if (!validTest(test)) { fail('Complete the situation, expected workflow, what happened, outcome, and manager decision.'); return; }
+    if (!validTest(test)) { fail('Record the expected workflow, run the workflow, and complete the problem/exception and manager decision.'); return; }
     const saved = { ...test, id: test.id || crypto.randomUUID() };
     const tests = test.id ? data.tests.map(item => item.id === test.id ? saved : item) : [...data.tests, saved];
     if (save({ ...data, tests }, 'Workflow Test Record saved.')) setTest(null);
+  }
+  function executeTest() {
+    if (!test.expected.trim()) { fail('Record Expected Workflow before running the workflow.'); return; }
+    const result = runWorkflow(test.situation, data.rules);
+    if (!result) { fail('Select a supplied situation and configure its Route To rule before running.'); return; }
+    setTest({ ...test, result, outcome: '', managerDecision: '' }); setError(''); setMessage('Workflow run complete. Evaluate the generated result.');
   }
   function saveEvaluation(event) {
     event.preventDefault();
@@ -121,6 +137,17 @@ export default function Workflows() {
         </li>)}</ol>}
     </section>
 
+    <section className="panel" aria-labelledby="automation-rules-title">
+      <div className="eyebrow">Automate · Control</div><h2 id="automation-rules-title">Automation Rules</h2>
+      <p>Configure each category’s routing rule. Changes save in this browser immediately. Run Workflow applies these rules; it does not execute your written workflow steps. This rule-based automation does not contact employees or complete guest issues.</p>
+      {TEST_SITUATIONS.map(({ category }) => <fieldset key={category} disabled={!!initial.error}>
+        <legend>{category}</legend><div className="task-form-grid">
+          <label>Route To<select aria-label={`${category} Route To`} value={data.rules[category].routeTo} onChange={event => save({ ...data, rules: { ...data.rules, [category]: { ...data.rules[category], routeTo: event.target.value } } }, 'Automation rule saved.')}><option value="">Select a destination</option>{ROUTES.map(route => <option key={route}>{route}</option>)}</select></label>
+          <label>Human Review<select aria-label={`${category} Human Review`} value={data.rules[category].humanReview ? 'Yes' : 'No'} onChange={event => save({ ...data, rules: { ...data.rules, [category]: { ...data.rules[category], humanReview: event.target.value === 'Yes' } } }, 'Automation rule saved.')}><option>Yes</option><option>No</option></select></label>
+        </div>
+      </fieldset>)}
+    </section>
+
     <section className="panel ai-feature" aria-labelledby="ai-workflow-title">
       <div className="eyebrow">Automate · Review</div><h2 id="ai-workflow-title">Prepare AI Workflow Review Prompt</h2>
       <ExternalAINotice />
@@ -137,19 +164,19 @@ export default function Workflows() {
 
     <section className="panel" aria-labelledby="test-workflow-title">
       <div className="panel-heading"><div><div className="eyebrow">Test</div><h2 id="test-workflow-title">Test Workflow</h2></div><button className="primary-button" disabled={!!initial.error || !!test} onClick={() => setTest(emptyTest())}>+ Add Workflow Test Record</button></div>
-      <p>Test all four fictional situations. You may save more than one record per situation when you revise and retest.</p>
-      <ul className="test-situation-list">{TEST_SITUATIONS.map(situation => <li key={situation}><strong>{situation}</strong><span>{data.tests.filter(testRecord => testRecord.situation === situation).length} test record(s)</span></li>)}</ul>
+      <p>Test all four guest issue situations by running them through your configured automation rules. You may save more than one record per situation when you revise and retest.</p>
+      <ul className="test-situation-list">{TEST_SITUATIONS.map(({ category, issue }) => <li key={category}><strong>{category}: {issue}</strong><span>{data.tests.filter(testRecord => testRecord.situation === issue).length} test record(s)</span></li>)}</ul>
       {test && <form className="proposal-card workflow-test-form" onSubmit={saveTest} aria-label={test.id ? 'Edit Workflow Test Record' : 'Add Workflow Test Record'}>
         <h3>{test.id ? 'Edit Workflow Test Record' : 'Add Workflow Test Record'}</h3>
         <div className="task-form-grid">
-          <label>Test Situation<select value={test.situation} onChange={event => setTest({ ...test, situation: event.target.value })} required><option value="">Select a situation</option>{TEST_SITUATIONS.map(value => <option key={value}>{value}</option>)}</select></label>
-          <label>Problem/Exception?<select value={test.outcome} onChange={event => setTest({ ...test, outcome: event.target.value })} required><option value="">Select what testing showed</option>{TEST_OUTCOMES.map(value => <option key={value}>{value}</option>)}</select></label>
-          <label>Expected Workflow<textarea value={test.expected} onChange={event => setTest({ ...test, expected: event.target.value })} rows={3} required /></label>
-          <label>What Happened<textarea value={test.happened} onChange={event => setTest({ ...test, happened: event.target.value })} rows={3} required /></label>
-          <label className="span-two">Manager Decision<textarea value={test.managerDecision} onChange={event => setTest({ ...test, managerDecision: event.target.value })} rows={3} required /></label>
+          <label>Test Situation<select disabled={!!test.id} value={test.situation} onChange={event => setTest({ ...emptyTest(), situation: event.target.value })} required><option value="">Select a situation</option>{test.happened && <option>{test.situation}</option>}{TEST_SITUATIONS.map(({ category, issue }) => <option key={category} value={issue}>{category}: {issue}</option>)}</select></label>
+          <label>Problem/Exception?<select disabled={!test.result && !test.happened} value={test.outcome} onChange={event => setTest({ ...test, outcome: event.target.value })} required><option value="">Select what testing showed</option>{TEST_OUTCOMES.map(value => <option key={value}>{value}</option>)}</select></label>
+          <label>Expected Workflow<textarea readOnly={!!test.result || !!test.id} value={test.expected} onChange={event => setTest({ ...test, expected: event.target.value })} rows={3} required /></label>
+          <div>{test.result ? <AutomationResult result={test.result} /> : test.happened ? <p>Historical student observation: {test.happened}</p> : <button type="button" className="primary-button" onClick={executeTest}>Run Workflow</button>}</div>
+          <label className="span-two">Manager Decision<textarea disabled={!test.result && !test.happened} value={test.managerDecision} onChange={event => setTest({ ...test, managerDecision: event.target.value })} rows={3} required /></label>
         </div><div className="form-actions"><button type="button" className="secondary-button" onClick={() => setTest(null)}>Cancel</button><button className="primary-button">Save Workflow Test Record</button></div>
       </form>}
-      <div className="workflow-test-records">{data.tests.map((item, index) => <article className="proposal-card" key={item.id}><div className="task-title-row"><h3>{item.situation}</h3><span className="proposal-status">Test {index + 1}</span></div><dl><dt>Expected Workflow</dt><dd>{item.expected}</dd><dt>What Happened</dt><dd>{item.happened}</dd><dt>Problem/Exception?</dt><dd>{item.outcome}</dd><dt>Manager Decision</dt><dd>{item.managerDecision}</dd></dl><button className="text-button" onClick={() => setTest({ ...item })}>Edit test record</button></article>)}</div>
+      <div className="workflow-test-records">{data.tests.map((item, index) => <article className="proposal-card" key={item.id}><div className="task-title-row"><h3>{item.situation}</h3><span className="proposal-status">Test {index + 1}</span></div><dl><dt>Expected Workflow</dt><dd>{item.expected}</dd></dl>{item.result ? <AutomationResult result={item.result} /> : <p>Historical student observation: {item.happened}</p>}<dl><dt>Problem/Exception?</dt><dd>{item.outcome}</dd><dt>Manager Decision</dt><dd>{item.managerDecision}</dd></dl><button className="text-button" disabled={!!test} onClick={() => setTest({ ...item })}>Edit test record</button>{item.result && <button className="secondary-button" disabled={!!test} onClick={() => setTest({ ...emptyTest(), situation: item.situation })}>Rerun situation</button>}</article>)}</div>
     </section>
 
     <section className="panel" aria-labelledby="management-evaluation-title">
