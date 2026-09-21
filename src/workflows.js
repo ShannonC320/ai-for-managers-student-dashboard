@@ -2,11 +2,30 @@ export const WORKFLOWS_KEY = 'ai-managers-student-workflows-v1';
 
 export const HANDLERS = ['Automation', 'AI Support', 'Human'];
 export const TEST_SITUATIONS = [
+  { category: 'Housekeeping', issue: 'Guest reports sand was left in the bathtub after housekeeping.' },
+  { category: 'Maintenance', issue: 'Guest reports the dishwasher is not working.' },
+  { category: 'Guest Services', issue: 'Guest reports that requested linens were not delivered.' },
+  { category: 'Management/Exception', issue: 'Guest reports bugs throughout the property and is requesting management assistance.' },
+];
+const LEGACY_SITUATIONS = [
   'Wi-Fi outage',
   'AC failure',
   'Water coming through a ceiling',
   'Broken bedroom lamp',
 ];
+export const ROUTES = ['Housekeeping', 'Maintenance', 'Vacation Rentals/Guest Services', 'Property Manager'];
+export const emptyRules = () => Object.fromEntries(TEST_SITUATIONS.map(({ category }) => [category, { routeTo: '', humanReview: true }]));
+export function runWorkflow(situation, rules) {
+  const supplied = TEST_SITUATIONS.find(item => item.issue === situation);
+  const rule = rules?.[supplied?.category];
+  if (!supplied || !ROUTES.includes(rule?.routeTo) || typeof rule.humanReview !== 'boolean') return null;
+  return { guestIssue: supplied.issue, category: supplied.category, routedTo: rule.routeTo, humanReview: rule.humanReview,
+    status: rule.humanReview ? 'Held for Human Review' : 'Automatically Routed' };
+}
+function validRules(rules) {
+  return TEST_SITUATIONS.every(({ category }) => rules?.[category] &&
+    ['', ...ROUTES].includes(rules[category].routeTo) && typeof rules[category].humanReview === 'boolean');
+}
 export const TEST_OUTCOMES = [
   'Workflow behaved as intended',
   'Wrong routing',
@@ -21,6 +40,7 @@ export const emptyWorkflows = () => ({
   version: 1,
   workflow: { name: '', purpose: '', steps: [] },
   tests: [],
+  rules: emptyRules(),
   evaluation: null,
 });
 
@@ -29,7 +49,7 @@ export const emptyStep = () => ({
 });
 
 export const emptyTest = () => ({
-  id: '', situation: '', expected: '', happened: '', outcome: '', managerDecision: '',
+  id: '', situation: '', expected: '', result: null, outcome: '', managerDecision: '',
 });
 
 export const emptyEvaluation = () => ({
@@ -45,9 +65,12 @@ export function validStep(step) {
 }
 
 export function validTest(test) {
-  return strings(test, ['id', 'situation', 'expected', 'happened', 'outcome', 'managerDecision']) &&
-    TEST_SITUATIONS.includes(test.situation) && TEST_OUTCOMES.includes(test.outcome) &&
-    [test.expected, test.happened, test.managerDecision].every(value => value.trim());
+  if (!strings(test, ['id', 'situation', 'expected', 'outcome', 'managerDecision']) ||
+    !TEST_OUTCOMES.includes(test.outcome) || !test.expected.trim() || !test.managerDecision.trim()) return false;
+  if (LEGACY_SITUATIONS.includes(test.situation)) return typeof test.happened === 'string' && !!test.happened.trim() && !test.result;
+  const result = test.result;
+  const expected = runWorkflow(test.situation, { [result?.category]: { routeTo: result?.routedTo, humanReview: result?.humanReview } });
+  return !!expected && Object.keys(expected).every(key => result[key] === expected[key]);
 }
 
 export function validEvaluation(evaluation) {
@@ -59,6 +82,7 @@ export function validEvaluation(evaluation) {
 export function validWorkflows(data) {
   const workflow = data?.workflow;
   return data?.version === 1 && strings(workflow, ['name', 'purpose']) &&
+    (data.rules === undefined || validRules(data.rules)) &&
     Array.isArray(workflow.steps) && workflow.steps.every(step => validStep(step) && step.id) &&
     new Set(workflow.steps.map(step => step.id)).size === workflow.steps.length &&
     Array.isArray(data.tests) && data.tests.every(test => validTest(test) && test.id) &&
@@ -71,7 +95,7 @@ export function readWorkflows() {
     const raw = localStorage.getItem(WORKFLOWS_KEY);
     const data = raw ? JSON.parse(raw) : emptyWorkflows();
     if (!validWorkflows(data)) throw new Error('Invalid saved data');
-    return { data, error: '' };
+    return { data: { ...data, rules: data.rules ?? emptyRules() }, error: '' };
   } catch {
     return {
       data: emptyWorkflows(),

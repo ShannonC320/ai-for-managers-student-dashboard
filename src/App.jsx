@@ -487,7 +487,7 @@ export default function App() {
         <div className="week-badge">
           <span>Course workspace</span>
           <strong>Weeks 1–5 of 7</strong>
-          <p>Map. Control. Test.</p>
+          <p>Map. Automate. Control. Test.</p>
         </div>
       </aside>
 

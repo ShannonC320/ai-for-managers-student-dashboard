@@ -365,3 +365,7 @@ ul.review-flags { padding-left: 32px; }
 .analysis-summary .proposal-card { margin: 0; }
 .analysis-summary dl > div { display: flex; justify-content: space-between; gap: 12px; }
 .analysis-page dd { margin: 4px 0 14px; }
+
+.workflows-page fieldset { min-width: 0; margin: 16px 0; border: 1px solid #cad6dd; border-radius: 8px; }
+.workflows-page fieldset legend { font-weight: 700; }
+.workflows-page select { max-width: 100%; }
