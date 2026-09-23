@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import App from './App.jsx';
-import { GRACE_KEY, readGrace } from './grace.js';
+import { askGrace, GRACE_KEY, readGrace } from './grace.js';
 import { graceQuestions } from './graceQuestions.js';
 
 const click = name => fireEvent.click(screen.getByRole('button', { name }));
@@ -11,7 +11,7 @@ const stored = () => JSON.parse(localStorage.getItem(GRACE_KEY));
 const answer = 'Generated response for the test; students must judge it.';
 beforeEach(() => {
   localStorage.clear(); window.history.replaceState(null, '', '#/assistant');
-  vi.stubEnv('VITE_GRACE_ENDPOINT', 'https://grace.example/chat');
+  vi.stubEnv('VITE_GRACE_ENDPOINT', 'https://grace.example');
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ response: answer }) }));
 });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
@@ -32,6 +32,11 @@ async function saveTest(type, question) {
   fireEvent.click(buttons.at(-1)); judgments(type); click('Save test');
 }
 describe('Week 6 Grace', () => {
+  it.each(['https://grace.example', 'https://grace.example/', 'https://grace.example/chat'])('sends requests to /chat for configured URL %s', async endpoint => {
+    vi.stubEnv('VITE_GRACE_ENDPOINT', endpoint);
+    await askGrace('coastal', 'When does my PTO increase?');
+    expect(fetch).toHaveBeenCalledWith('https://grace.example/chat', expect.objectContaining({ method: 'POST' }));
+  });
   it('adds navigation without replacing prior destinations and renders Grace', () => {
     window.history.replaceState(null, '', '#/home'); render(<App />);
     const nav = screen.getByRole('navigation', { name: 'Main navigation' });

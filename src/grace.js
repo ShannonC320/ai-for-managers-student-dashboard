@@ -25,7 +25,7 @@ export function readGrace() {
 export async function askGrace(source, question, signal) {
   const endpoint = import.meta.env.VITE_GRACE_ENDPOINT;
   if (!endpoint) throw new Error('Grace is not connected yet. The course administrator must configure the AI service.');
-  const response = await fetch(endpoint, {
+  const response = await fetch(new URL('/chat', endpoint).href, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ source, question }), signal,
   });
