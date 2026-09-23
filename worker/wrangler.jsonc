@@ -1,0 +1,14 @@
+{
+  "name": "ai-managers-grace",
+  "main": "index.js",
+  "compatibility_date": "2026-09-22",
+  "ai": { "binding": "AI" },
+  "vars": { "ALLOWED_ORIGINS": "https://shannonc320.github.io" },
+  "env": {
+    "development": {
+      "name": "ai-managers-grace-development",
+      "ai": { "binding": "AI" },
+      "vars": { "ALLOWED_ORIGINS": "http://localhost:5173,http://127.0.0.1:5173" }
+    }
+  }
+}
