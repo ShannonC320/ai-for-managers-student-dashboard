@@ -46,6 +46,7 @@ describe('Week 6 Grace', () => {
     click('AI Assistant'); expect(location.hash).toBe('#/assistant');
     expect(screen.getByRole('heading', { name: 'Grace' })).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'Grace' })).toHaveAttribute('src', `${import.meta.env.BASE_URL}assets/grace-avatar.png`);
+    expect(screen.queryByLabelText('Grace avatar pending')).not.toBeInTheDocument();
     expect(screen.queryByText(/Management Decision/i)).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Send' })).toBeDisabled();
     expect(screen.getByLabelText('Knowledge source')).toHaveValue('');
@@ -57,6 +58,10 @@ describe('Week 6 Grace', () => {
     click(graceQuestions[0]); expect(fetch).not.toHaveBeenCalled();
     expect(screen.getByLabelText('Your question')).toHaveValue(graceQuestions[0]);
     click('Send'); await screen.findByText(answer);
+    const avatars = screen.getAllByRole('img', { name: 'Grace' });
+    expect(avatars).toHaveLength(2);
+    for (const avatar of avatars) expect(avatar).toHaveAttribute('src', `${import.meta.env.BASE_URL}assets/grace-avatar.png`);
+    expect(screen.queryByLabelText('Grace avatar pending')).not.toBeInTheDocument();
     expect(fetch).toHaveBeenCalledWith('https://grace.example/chat', expect.objectContaining({
       body: JSON.stringify({ source: 'coastal', question: graceQuestions[0] }),
     }));

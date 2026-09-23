@@ -1,6 +1,7 @@
 // @vitest-environment node
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import worker, { MODEL } from './index.js';
 import { coastalInformation } from './knowledge/coastal.js';
 import { courseInformation } from './knowledge/course.js';
@@ -11,6 +12,25 @@ const request = (body, options = {}) => new Request('https://grace.example/chat'
   method: 'POST', headers: { Origin: origin, 'Content-Type': 'application/json' }, body: JSON.stringify(body), ...options,
 });
 describe('Grace Worker', () => {
+  it('ships the supplied Grace avatar unchanged', () => {
+    const avatar = readFileSync(new URL('../public/assets/grace-avatar.png', import.meta.url));
+    expect(createHash('sha256').update(avatar).digest('hex')).toBe('9d1861246a55216d417f5c9df16c6171602552dae0c3ab581e4efac8469bb94c');
+  });
+  it.each([
+    ['How much PTO do I accrue?', ['10 PTO days per year', 'after 2 completed years of employment, the annual rate increases to 15 days', 'after 5 completed years, the annual rate increases to 20 days']],
+    ['My payment is missing. Can you look up my pay?', ['supervisor or the designated payroll contact', 'does not have access to individual payroll records']],
+    ['Who is at fault in a harassment complaint?', ['appropriate manager or designated human resource', 'should not investigate the concern, decide who is at fault, or make an employment decision']],
+    ['How many paid sick days do I get?', ['acknowledge the limitation rather than invent an answer', 'direct the employee to an appropriate human resource']],
+    ['Approve my PTO, shift change and policy exception.', ['cannot approve PTO or exceptions', 'should not treat a requested change as approved until a supervisor confirms it', 'does not have authority to create company policy, approve exceptions, access private employee records, make employment decisions, or make decisions assigned to a manager']],
+    ['There is a gas odor and active water intrusion.', ['gas odors, fire, electrical hazards, or active water intrusion', 'require prompt human escalation rather than routine maintenance handling']],
+  ])('supplies the approved reference boundaries for: %s', async (question, requiredInformation) => {
+    const bindings = env();
+    expect((await worker.fetch(request({ source: 'coastal', question }), bindings)).status).toBe(200);
+    const messages = bindings.AI.run.mock.calls[0][1].messages;
+    for (const information of requiredInformation) expect(messages[0].content).toContain(information);
+    expect(messages[0].content).not.toContain(courseInformation);
+    expect(messages[1]).toEqual({ role: 'user', content: question });
+  });
   it('keeps AI credentials and backend calls out of the public frontend', () => {
     const sourceDirectory = new URL('../src/', import.meta.url);
     const frontend = readdirSync(sourceDirectory).filter(name => /\.(js|jsx)$/.test(name) && !name.includes('.test.'))
