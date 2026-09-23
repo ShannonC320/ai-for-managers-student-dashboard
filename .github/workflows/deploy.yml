@@ -31,6 +31,8 @@ jobs:
         run: pnpm test
       - name: Build static application
         run: pnpm build
+        env:
+          VITE_GRACE_ENDPOINT: ${{ vars.VITE_GRACE_ENDPOINT }}
       - name: Upload Pages artifact
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v3

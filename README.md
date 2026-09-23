@@ -1,6 +1,6 @@
-# AI for Managers Student Dashboard — Weeks 1–2
+# AI for Managers Student Dashboard — Weeks 1–6
 
-This React application is a progressively extensible workspace for a seven-week undergraduate business course. Week 1 Home and Profile remain in place; Week 2 adds Planner / Tasks for planning, priorities, and workload. No account, backend, paid service, or external AI API is used.
+This React application is a progressively extensible workspace for a seven-week undergraduate business course. Weeks 1–5 remain in place. Week 6 adds Grace, an embedded AI Assistant with a minimal Cloudflare Workers AI backend. Student records remain browser-local; no student accounts or database are used. See [Week 6 setup, verification, and live pilot](WEEK6.md) before enabling the AI service.
 
 ## Run it locally
 
@@ -30,7 +30,7 @@ Each task can have multiple **Must complete first** prerequisites, separate from
 
 ## Week 2 external AI learning cycle
 
-**AI proposes → dashboard checks → student evaluates → student decides.** The dashboard prepares prompts and reviews structured output. It never calls an AI service, embeds credentials, or presents parsing/calculation as AI. Use the instructor's approved external AI tool separately. Its availability, account requirements, usage limits and data policies are separate from this free dashboard; no paid model is required by the application. Do not paste sensitive student information into an external tool. Profile information is not included in generated prompts.
+**AI proposes → dashboard checks → student evaluates → student decides.** Week 2 prepares prompts and reviews structured output without calling an AI service or embedding credentials. Use the instructor's approved external AI tool separately for Week 2. Its availability, account requirements, usage limits and data policies are separate from the dashboard. Do not paste sensitive student information into an external tool. Profile information is not included in generated prompts. Week 6's embedded Grace service is configured separately.
 
 ### Prepare AI Task Import
 
@@ -78,7 +78,7 @@ Dashboard data stays in the same browser profile on the same website origin. It 
 
 The dashboard is deployed through GitHub Pages. The repository and website are public. Each visitor's profile and tasks remain only in that visitor's browser; they are never committed to Git or uploaded to GitHub.
 
-Vite's `base` is `/ai-for-managers-student-dashboard/`, so generated assets load from the repository's Pages path. Keep the existing fragment routes (`#/home`, `#/profile`, `#/tasks`); do not replace them with server-dependent routes. The app uses system fonts and has no runtime backend or external API.
+Vite's `base` is `/ai-for-managers-student-dashboard/`, so generated assets load from the repository's Pages path. Keep the existing fragment routes (`#/home`, `#/profile`, `#/tasks`); do not replace them with server-dependent routes. The app uses system fonts. Only Week 6's `#/assistant` page calls the separately deployed Grace Worker.
 
 ## One-time deployment configuration
 

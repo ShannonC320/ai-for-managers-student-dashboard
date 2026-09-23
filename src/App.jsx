@@ -3,6 +3,7 @@ import Planner from './Planner.jsx';
 import Research from './Research.jsx';
 import Analysis from './Analysis.jsx';
 import Workflows from './Workflows.jsx';
+import Grace from './Grace.jsx';
 import useDashboardData from './useDashboardData.js';
 import PlanningSummary from './PlanningSummary.jsx';
 
@@ -19,7 +20,7 @@ const academicYears = ['First year', 'Sophomore', 'Junior', 'Senior', 'Other'];
 
 function pageFromLocation() {
   const page = window.location.hash.slice(2);
-  return ['home', 'profile', 'tasks', 'research', 'analysis', 'workflows'].includes(page) ? page : 'home';
+  return ['home', 'profile', 'tasks', 'research', 'analysis', 'workflows', 'assistant'].includes(page) ? page : 'home';
 }
 
 function readProfile() {
@@ -360,7 +361,7 @@ export default function App() {
 
   useEffect(() => {
     if (
-      !['#/home', '#/profile', '#/tasks', '#/research', '#/analysis', '#/workflows'].includes(
+      !['#/home', '#/profile', '#/tasks', '#/research', '#/analysis', '#/workflows', '#/assistant'].includes(
         window.location.hash
       )
     ) {
@@ -383,7 +384,7 @@ export default function App() {
 
   useEffect(() => {
     document.title = `${
-      activePage === 'workflows' ? 'Workflows' : activePage === 'analysis' ? 'Analysis' : activePage === 'tasks'
+      activePage === 'assistant' ? 'AI Assistant' : activePage === 'workflows' ? 'Workflows' : activePage === 'analysis' ? 'Analysis' : activePage === 'tasks'
         ? 'Planner'
         : activePage === 'research'
           ? 'Research'
@@ -482,11 +483,15 @@ export default function App() {
           >
             <span aria-hidden="true">⇄</span> Workflows
           </button>
+          <button className={activePage === 'assistant' ? 'nav-item active' : 'nav-item'}
+            onClick={() => navigate('assistant')} aria-current={activePage === 'assistant' ? 'page' : undefined}>
+            AI Assistant
+          </button>
         </nav>
 
         <div className="week-badge">
           <span>Course workspace</span>
-          <strong>Weeks 1–5 of 7</strong>
+          <strong>Weeks 1–6 of 7</strong>
           <p>Map. Automate. Control. Test.</p>
         </div>
       </aside>
@@ -496,7 +501,7 @@ export default function App() {
           <span className="header-location">
             Student workspace <span aria-hidden="true">/</span>{' '}
             <strong>
-              {activePage === 'workflows' ? 'Workflows' : activePage === 'analysis' ? 'Analysis' : activePage === 'home'
+              {activePage === 'assistant' ? 'AI Assistant' : activePage === 'workflows' ? 'Workflows' : activePage === 'analysis' ? 'Analysis' : activePage === 'home'
                 ? 'Home'
                 : activePage === 'profile'
                   ? 'Profile'
@@ -532,6 +537,8 @@ export default function App() {
           <Planner dashboard={dashboard} />
         ) : activePage === 'analysis' ? (
           <Analysis />
+        ) : activePage === 'assistant' ? (
+          <Grace />
         ) : activePage === 'workflows' ? (
           <Workflows />
         ) : (
