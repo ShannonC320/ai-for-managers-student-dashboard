@@ -536,7 +536,7 @@ export default function App() {
         ) : activePage === 'tasks' ? (
           <Planner dashboard={dashboard} />
         ) : activePage === 'analysis' ? (
-          <Analysis />
+          <Analysis dashboard={dashboard} />
         ) : activePage === 'assistant' ? (
           <Grace />
         ) : activePage === 'workflows' ? (

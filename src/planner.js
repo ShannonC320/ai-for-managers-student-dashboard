@@ -50,6 +50,7 @@ export function summarize(tasks, today = localDate()) {
 }
 
 export function validateTask(task) {
+  if (task.completedOn !== undefined && task.completedOn !== '' && !validDate(task.completedOn)) return 'Enter a valid Completed On date (1900 or later).';
   if (!task.title.trim()) return 'Enter a task title; spaces alone are not a title.';
   if (task.title.trim().length > 160) return 'Keep the task title to 160 characters or fewer.';
   if (!validDate(task.dueDate)) return 'Enter a valid due date (1900 or later).';
@@ -81,4 +82,11 @@ export function readTasks() {
 
 export function writeTasks(tasks) {
   localStorage.setItem(TASKS_KEY, JSON.stringify({ version: 1, tasks }));
+}
+
+export function completionTiming(task) {
+  if (!task.completed || !validDate(task.dueDate) || !validDate(task.completedOn)) return null;
+  // UTC midnight is used only for calendar arithmetic, never for today's local date.
+  const days = (Date.parse(`${task.completedOn}T00:00:00Z`) - Date.parse(`${task.dueDate}T00:00:00Z`)) / 86400000;
+  return { classification: days < 0 ? 'Early' : days > 0 ? 'Late' : 'On Time', days: Math.abs(days) };
 }

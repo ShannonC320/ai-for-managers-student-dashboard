@@ -29,7 +29,7 @@ export function dependencyIssues(tasks) {
 }
 
 export function duplicateTask(task) {
-  return { ...task, id: undefined, title: `${task.title} (copy)`.slice(0, 160), dueDate: '', completed: false, dependencies: [...(task.dependencies || [])] };
+  return { ...task, id: undefined, title: `${task.title} (copy)`.slice(0, 160), dueDate: '', completed: false, completedOn: '', dependencies: [...(task.dependencies || [])] };
 }
 
 export function validCapacityValue(value) {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { formatHours, priorities, summarize, taskStatus, validateTask } from './planner.js';
+import { completionTiming, localDate, formatHours, priorities, summarize, taskStatus, validateTask } from './planner.js';
 import { dependencyIssues, duplicateTask } from './planningSupport.js';
 import { DependencyPicker } from './PlanningControls.jsx';
 import { CapacitySummary } from './PlanningSummary.jsx';
@@ -87,6 +87,7 @@ export default function Planner({ dashboard }) {
             <label className="span-two">Task title<input ref={titleInput} name="title" value={draft.title} onChange={field} required maxLength={160} /></label>
             <label>Course / project / category (optional)<input name="category" value={draft.category} onChange={field} maxLength={100} /></label>
             <label>Due date<input name="dueDate" type="date" value={draft.dueDate} onChange={field} min="1900-01-01" max="9999-12-31" required /><small>Due through the end of this date, in your local time.</small></label>
+            {draft.completed && <label>Completed On<input name="completedOn" type="date" value={draft.completedOn || ''} onChange={field} min="1900-01-01" max="9999-12-31" /><small>Enter the actual local calendar date. Leave blank if not recorded.</small></label>}
             <label>Estimated remaining hours<input name="hours" type="number" min="0" max="1000" step="any" value={draft.hours} onChange={field} required /><small>Decimals are welcome, e.g. 0.5 for 30 minutes.</small></label>
             <label>Priority<select name="priority" value={draft.priority} onChange={field}>{priorities.map(value => <option key={value}>{value}</option>)}</select></label>
             <label className="span-two">Brief notes (optional)<textarea name="notes" value={draft.notes} onChange={field} rows={3} maxLength={1000} /></label>
@@ -106,14 +107,16 @@ export default function Planner({ dashboard }) {
           {!visible.length ? <div className="empty-state"><h3>{tasks.length ? 'No tasks in this view' : 'A clear place to start'}</h3><p>{tasks.length ? 'Choose another view to see your tasks.' : 'Add an assignment, estimate the effort, and choose its priority. Your plan starts here.'}</p></div> :
             <ul className="task-list">{visible.map(task => {
               const status = taskStatus(task, today);
+              const timing = completionTiming(task);
               return <li key={task.id} className={`task-item ${task.completed ? 'is-complete' : ''}`}>
                 <div className="task-title-row"><h3>{task.title}</h3><span className={`priority priority-${task.priority.toLowerCase()}`}>{task.priority} priority</span></div>
                 {task.category && <p className="task-category">{task.category}</p>}
                 <div className="task-meta"><span className={`status status-${status.toLowerCase().replace(' ', '-')}`}>{status}</span><span>Due {displayDate(task.dueDate)}</span><span>{formatHours(task.hours)} hrs estimated</span></div>
                 {task.notes && <p className="task-notes">{task.notes}</p>}
+                {task.completed && <p>{task.completedOn ? `Completed On ${displayDate(task.completedOn)}` : 'Completion date not recorded'}{timing && ` · ${timing.classification} · ${timing.days} calendar days${timing.classification === 'On Time' ? ' early/late' : ` ${timing.classification.toLowerCase()}`}`}. Edit to update the completion date.</p>}
                 {issues.some(issue => issue.taskId === task.id) && <ul className="review-flags">{issues.filter(issue => issue.taskId === task.id).map((issue, index) => <li key={index}>{issue.message}</li>)}</ul>}
                 <div className="task-actions">
-                  <label className="completion-control"><input type="checkbox" checked={task.completed} disabled={!!draft} onChange={() => commit(tasks.map(item => item.id === task.id ? { ...item, completed: !item.completed } : item), task.completed ? 'Task reopened.' : 'Task completed.')} aria-label={`Mark ${task.title} ${task.completed ? 'incomplete' : 'complete'}`} />{task.completed ? 'Completed' : 'Mark complete'}</label>
+                  <label className="completion-control"><input type="checkbox" checked={task.completed} disabled={!!draft} onChange={() => commit(tasks.map(item => item.id === task.id ? { ...item, completed: !item.completed, completedOn: item.completed ? '' : localDate() } : item), task.completed ? 'Task reopened.' : 'Task completed.')} aria-label={`Mark ${task.title} ${task.completed ? 'incomplete' : 'complete'}`} />{task.completed ? 'Completed' : 'Mark complete'}</label>
                   <button className="text-button" disabled={!!draft} onClick={() => { setDraft({ ...task }); setError(''); setMessage(''); setDeleting(null); }} aria-label={`Edit ${task.title}`}>Edit</button>
                   <button className="text-button" disabled={!!draft} onClick={() => { setDraft(duplicateTask(task)); setError(''); setMessage('Duplicate draft: choose a new due date and revise any details before saving.'); setDeleting(null); }} aria-label={`Duplicate ${task.title}`}>Duplicate task</button>
                   <button className="remove-button" disabled={!!draft} onClick={() => { setDeleting(task.id); setMessage(''); }} aria-label={`Delete ${task.title}`}>Delete</button>

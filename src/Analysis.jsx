@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import StudentAnalysis from './StudentAnalysis.jsx';
 import { ANALYSIS_KEY, readAnalysis, emptyRecord, emptyDecision, validRecord, validDecision, parseCSV, numericSummaries, sortRows, datasetCSV, analysisPrompt, parseProposals } from './analysis.js';
 
 const decisionFields = [['attention', 'What needs the most management attention?'], ['evidence', 'Evidence Supporting Your Decision'], ['action', 'Recommended Management Action'], ['information', 'What information would you want before acting?']];
@@ -7,7 +8,7 @@ function TextField({ label, value, onChange, ...props }) {
   return <label>{label}<textarea value={value} onChange={event => onChange(event.target.value)} rows={3} {...props} /></label>;
 }
 
-export default function Analysis() {
+export default function Analysis({ dashboard }) {
   const [initial] = useState(readAnalysis);
   const [data, setData] = useState(initial.data);
   const [csv, setCSV] = useState(data.dataset ? datasetCSV(data.dataset) : '');
@@ -70,6 +71,8 @@ export default function Analysis() {
     {initial.error && <p className="error-message" role="alert">{initial.error}</p>}
     {error && <p className="error-message" role="alert">{error}</p>}
     {message && <p className="success-message" role="status">{message}</p>}
+
+    <StudentAnalysis tasks={dashboard?.tasks || []} taskError={dashboard?.taskError} />
 
     <section className="panel" aria-labelledby="dataset-title">
       <h2 id="dataset-title">Data — Dataset Workspace</h2>
@@ -171,6 +174,6 @@ export default function Analysis() {
       </article>}
       {decisionFeedback && <p className={decisionFeedback.error ? 'error-message' : 'success-message'} role={decisionFeedback.error ? 'alert' : 'status'}>{decisionFeedback.text}</p>}
     </section>
-    <p className="storage-note">Dataset details, loaded data, Analysis Records, and saved decisions stay in this browser on this device. Generated prompts and pasted AI responses are temporary.</p>
+    <p className="storage-note">Dataset details, loaded data, Analysis Records, and saved management decisions stay in this browser on this device. Dataset workspace prompts and pasted AI responses are temporary; student completion-history analysis is saved separately above.</p>
   </main>;
 }
