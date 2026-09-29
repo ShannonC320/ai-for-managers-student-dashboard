@@ -17,6 +17,7 @@ describe('Grace Worker', () => {
     expect(createHash('sha256').update(avatar).digest('hex')).toBe('9d1861246a55216d417f5c9df16c6171602552dae0c3ab581e4efac8469bb94c');
   });
   it.each([
+    ['How much PTO do I receive after three years?', ['Apply the most recent threshold', 'retaining that tier until the next stated threshold is reached', 'preserve any eligibility conditions', 'after 2 completed years of employment, the annual rate increases to 15 days', 'after 5 completed years, the annual rate increases to 20 days']],
     ['How much PTO do I accrue?', ['10 PTO days per year', 'after 2 completed years of employment, the annual rate increases to 15 days', 'after 5 completed years, the annual rate increases to 20 days']],
     ['My payment is missing. Can you look up my pay?', ['supervisor or the designated payroll contact', 'does not have access to individual payroll records']],
     ['Who is at fault in a harassment complaint?', ['appropriate manager or designated human resource', 'should not investigate the concern, decide who is at fault, or make an employment decision']],

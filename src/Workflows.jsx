@@ -104,7 +104,7 @@ export default function Workflows({ dashboard }) {
     <div className="page-heading"><div>
       <div className="eyebrow">Undergraduate Week 5 · MAP → AUTOMATE → CONTROL → TEST</div>
       <h1>Workflows &amp; Automation</h1>
-      <p>Design and test Coastal Life’s Guest Issue Response Workflow. Make automation, AI support, human control, and escalation choices visible.</p>
+      <p>Map a process, automate appropriate steps, keep human control visible, and test whether the workflow works as intended.</p>
     </div></div>
     {initial.error && <p className="error-message" role="alert">{initial.error}</p>}
     {error && <p className="error-message" role="alert">{error}</p>}

@@ -65,7 +65,7 @@ export default function Analysis({ dashboard }) {
     <div className="page-heading"><div>
       <div className="eyebrow">Week 4 · DATA → ANALYZE → REVIEW → DECIDE</div>
       <h1>Data Analysis &amp; Decision Support</h1>
-      <p>Use data and AI-supported analysis to identify patterns, evaluate evidence, and make a management decision.</p>
+      <p>Use data and AI-supported analysis to identify patterns, evaluate evidence, and make an informed decision.</p>
       <p>AI can assist with analysis. You are responsible for checking the analysis and making the decision.</p>
     </div></div>
     {initial.error && <p className="error-message" role="alert">{initial.error}</p>}
