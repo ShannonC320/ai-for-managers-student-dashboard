@@ -2,7 +2,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync, readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import worker, { MODEL } from './index.js';
+import worker, { annualRateIntervals, MODEL } from './index.js';
 import { coastalInformation } from './knowledge/coastal.js';
 import { courseInformation } from './knowledge/course.js';
 
@@ -12,6 +12,11 @@ const request = (body, options = {}) => new Request('https://grace.example/chat'
   method: 'POST', headers: { Origin: origin, 'Content-Type': 'application/json' }, body: JSON.stringify(body), ...options,
 });
 describe('Grace Worker', () => {
+  it('derives bounded annual-rate intervals only from the selected approved source', () => {
+    expect(annualRateIntervals(coastalInformation)).toBe('2 or more completed years but fewer than 5: 15 days per year.\n5 or more completed years (no later increase stated): 20 days per year.');
+    expect(annualRateIntervals(courseInformation)).toBe('');
+    expect(annualRateIntervals('Beginning after 4 completed years, the annual rate increases to 12 days. Beginning after 9 completed years, the annual rate increases to 18 days.')).toBe('4 or more completed years but fewer than 9: 12 days per year.\n9 or more completed years (no later increase stated): 18 days per year.');
+  });
   it('ships the supplied Grace avatar unchanged', () => {
     const avatar = readFileSync(new URL('../public/assets/grace-avatar.png', import.meta.url));
     expect(createHash('sha256').update(avatar).digest('hex')).toBe('9d1861246a55216d417f5c9df16c6171602552dae0c3ab581e4efac8469bb94c');
