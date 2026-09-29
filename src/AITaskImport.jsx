@@ -1,3 +1,4 @@
+import { t } from './i18n.js';
 import { useState } from 'react';
 import { approvedTask, emptyImport, parseProposals, proposalWarnings, taskImportPrompt } from './planningSupport.js';
 import { DependencyPicker, ExternalAINotice, PromptOutput } from './PlanningControls.jsx';
@@ -100,36 +101,30 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
 
   return (
     <details className="panel ai-feature">
-      <summary>Prepare AI Task Import</summary>
+      <summary>{t("Prepare AI Task Import")}</summary>
 
       <ExternalAINotice />
 
-      <p>
-        Turn syllabus, course schedule, instructor-list, workplace, or
-        spreadsheet-style text into proposals using an external AI tool.
-        Review the result here before adding anything to Planner.
-      </p>
+      <p>{t("Turn syllabus, course schedule, instructor-list, workplace, or spreadsheet-style text into proposals using an external AI tool. Review the result here before adding anything to Planner.")}</p>
 
       {error && (
         <p className="error-message" role="alert">
-          {error}
+          {t(error)}
         </p>
       )}
 
       {message && (
         <p role="status" className="success-message">
-          {message}
+          {t(message)}
         </p>
       )}
 
-      <label>
-        Task information
-        <textarea
+      <label>{t("Task information")}<textarea
           value={source}
           onChange={event => setSource(event.target.value)}
           rows={5}
           maxLength={30000}
-          placeholder="Paste the relevant academic or workplace task information here. Remove sensitive information first."
+          placeholder={t("Paste the relevant academic or workplace task information here. Remove sensitive information first.")}
         />
       </label>
 
@@ -138,29 +133,20 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
         type="button"
         disabled={locked}
         onClick={prepare}
-      >
-        Generate task-import prompt
-      </button>
+      >{t("Generate task-import prompt")}</button>
 
-      <PromptOutput value={data.prompt} label="Task-import prompt" />
+      <PromptOutput value={data.prompt} label={t("Task-import prompt")} />
 
-      <label>
-        AI task response
-        <textarea
+      <label>{t("AI task response")}<textarea
           value={response}
           onChange={event => setResponse(event.target.value)}
           rows={5}
           maxLength={100000}
-          placeholder="Paste the complete JSON response from your AI tool. You do not need to write code."
+          placeholder={t("Paste the complete JSON response from your AI tool. You do not need to write code.")}
         />
       </label>
 
-      <p className="muted">
-        Parsing checks the response format; it is not AI. Task-import source,
-        prompt, AI response, and unapproved proposals are temporary.
-        Refreshing the page or starting a new task import clears them.
-        Approved Planner tasks remain saved.
-      </p>
+      <p className="muted">{t("Parsing checks the response format; it is not AI. Task-import source, prompt, AI response, and unapproved proposals are temporary. Refreshing the page or starting a new task import clears them. Approved Planner tasks remain saved.")}</p>
 
       <div className="task-actions">
         <button
@@ -168,9 +154,7 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
           disabled={locked}
           type="button"
           onClick={parse}
-        >
-          Review proposed tasks
-        </button>
+        >{t("Review proposed tasks")}</button>
 
         {(source || data.prompt || response || data.proposals.length > 0) && (
           <button
@@ -178,21 +162,15 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
             disabled={locked}
             type="button"
             onClick={startNewImport}
-          >
-            Start new task import
-          </button>
+          >{t("Start new task import")}</button>
         )}
       </div>
 
       {data.proposals.length > 0 && (
-        <section aria-label="Proposed Tasks" className="proposals">
-          <h2>Proposed Tasks</h2>
+        <section aria-label={t("Proposed Tasks")} className="proposals">
+          <h2>{t("Proposed Tasks")}</h2>
 
-          <p>
-            Check dates, effort, priority, sources, and prerequisites. Approve
-            prerequisites first. Each approval adds one task; rejecting a
-            proposal does not delete a saved task.
-          </p>
+          <p>{t("Check dates, effort, priority, sources, and prerequisites. Approve prerequisites first. Each approval adds one task; rejecting a proposal does not delete a saved task.")}</p>
 
           {data.proposals.map(proposal => {
             const isSaved = tasks.some(task => task.id === proposal.id);
@@ -202,22 +180,22 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
               <section
                 key={proposal.id}
                 className="proposal-card"
-                aria-label={`Proposal ${proposal.externalId}`}
+                aria-label={t(`Proposal ${proposal.externalId}`)}
               >
                 <div className="panel-heading">
                   <h3>
                     {proposal.externalId}:{' '}
-                    {proposal.title || 'Untitled proposal'}
+                    {proposal.title || t('Untitled proposal')}
                   </h3>
 
-                  <span className="proposal-status">{status}</span>
+                  <span className="proposal-status">{t(status)}</span>
                 </div>
 
                 {status === 'pending' ? (
                   <>
                     <p className="source-excerpt">
-                      <strong>Source excerpt:</strong>{' '}
-                      {proposal.source || 'Not supplied'}
+                      <strong>{t("Source excerpt:")}</strong>{' '}
+                      {proposal.source || t('Not supplied')}
                     </p>
 
                     <ul className="review-flags">
@@ -226,14 +204,12 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
                         candidates,
                         today
                       ).map((warning, index) => (
-                        <li key={index}>{warning}</li>
+                        <li key={index}>{t(warning)}</li>
                       ))}
                     </ul>
 
                     <div className="task-form-grid">
-                      <label className="span-two">
-                        Proposed title
-                        <input
+                      <label className="span-two">{t("Proposed title")}<input
                           value={proposal.title}
                           maxLength={160}
                           onChange={event =>
@@ -245,9 +221,7 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
                         />
                       </label>
 
-                      <label>
-                        Proposed category
-                        <input
+                      <label>{t("Proposed category")}<input
                           value={proposal.category}
                           maxLength={100}
                           onChange={event =>
@@ -259,9 +233,7 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
                         />
                       </label>
 
-                      <label>
-                        Proposed due date
-                        <input
+                      <label>{t("Proposed due date")}<input
                           type="date"
                           min="1900-01-01"
                           max="9999-12-31"
@@ -275,9 +247,7 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
                         />
                       </label>
 
-                      <label>
-                        Proposed hours
-                        <input
+                      <label>{t("Proposed hours")}<input
                           type="number"
                           min="0"
                           max="1000"
@@ -292,9 +262,7 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
                         />
                       </label>
 
-                      <label>
-                        Proposed priority
-                        <select
+                      <label>{t("Proposed priority")}<select
                           value={proposal.priority}
                           onChange={event =>
                             update(proposal.id, {
@@ -303,16 +271,14 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
                             })
                           }
                         >
-                          <option value="">Choose priority</option>
+                          <option value="">{t("Choose priority")}</option>
                           {['High', 'Medium', 'Low'].map(priority => (
-                            <option key={priority}>{priority}</option>
+                            <option key={priority} value={priority}>{t(priority)}</option>
                           ))}
                         </select>
                       </label>
 
-                      <label className="span-two">
-                        Proposed notes
-                        <textarea
+                      <label className="span-two">{t("Proposed notes")}<textarea
                           value={proposal.notes}
                           maxLength={1000}
                           rows={2}
@@ -347,10 +313,7 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
                             reviewed: event.target.checked
                           })
                         }
-                      />
-                      I checked this proposal against the source and reviewed
-                      every flag.
-                    </label>
+                      />{t("I checked this proposal against the source and reviewed every flag.")}</label>
 
                     <div className="task-actions">
                       <button
@@ -358,8 +321,7 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
                         type="button"
                         disabled={locked}
                         onClick={() => approve(proposal)}
-                      >
-                        Approve task {proposal.externalId}
+                      >{t("Approve task ")}{proposal.externalId}
                       </button>
 
                       <button
@@ -378,16 +340,15 @@ export default function AITaskImport({ tasks, commit, today, disabled }) {
                             );
                           }
                         }}
-                      >
-                        Reject task {proposal.externalId}
+                      >{t("Reject task ")}{proposal.externalId}
                       </button>
                     </div>
                   </>
                 ) : (
                   <p>
                     {status === 'approved'
-                      ? 'Approved proposal. Manage the saved task in Your tasks.'
-                      : 'Rejected proposal. Nothing was added to Planner.'}
+                      ? t('Approved proposal. Manage the saved task in Your tasks.')
+                      : t('Rejected proposal. Nothing was added to Planner.')}
                   </p>
                 )}
               </section>

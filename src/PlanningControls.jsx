@@ -1,3 +1,4 @@
+import { t } from './i18n.js';
 import { useState } from 'react';
 
 export function DependencyPicker({ tasks, value = [], onChange, currentId }) {
@@ -21,15 +22,12 @@ export function DependencyPicker({ tasks, value = [], onChange, currentId }) {
 
   return (
     <fieldset className="dependency-picker">
-      <legend>Must complete first</legend>
+      <legend>{t("Must complete first")}</legend>
 
-      <p className="muted">
-        Prerequisites are separate from priority. Select all that apply.
-        Completed prerequisites are considered satisfied and are not shown here.
-      </p>
+      <p className="muted">{t("Prerequisites are separate from priority. Select all that apply. Completed prerequisites are considered satisfied and are not shown here.")}</p>
 
       {!options.length && !missing.length && (
-        <p className="muted">No unfinished prerequisite tasks available.</p>
+        <p className="muted">{t("No unfinished prerequisite tasks available.")}</p>
       )}
 
       <div className="checklist">
@@ -40,7 +38,7 @@ export function DependencyPicker({ tasks, value = [], onChange, currentId }) {
               checked={value.includes(task.id)}
               onChange={() => toggle(task.id)}
             />
-            {task.title || 'Untitled proposal'}
+            {task.title || t('Untitled proposal')}
           </label>
         ))}
 
@@ -50,9 +48,7 @@ export function DependencyPicker({ tasks, value = [], onChange, currentId }) {
               type="checkbox"
               checked
               onChange={() => toggle(id)}
-            />
-            Missing or invalid prerequisite: {id} — uncheck to remove
-          </label>
+            />{t("Missing or invalid prerequisite: ")}{id}{t(" — uncheck to remove")}</label>
         ))}
       </div>
     </fieldset>
@@ -78,7 +74,7 @@ export function PromptOutput({ value, label }) {
   return (
     <div className="prompt-output">
       <label>
-        {label}
+        {t(label)}
         <textarea
           readOnly
           value={value}
@@ -91,23 +87,15 @@ export function PromptOutput({ value, label }) {
         className="secondary-button"
         type="button"
         onClick={copy}
-      >
-        Copy prompt
-      </button>
+      >{t("Copy prompt")}</button>
 
-      {message && <p role="status">{message}</p>}
+      {message && <p role="status">{t(message)}</p>}
     </div>
   );
 }
 
 export function ExternalAINotice() {
   return (
-    <p className="external-ai-notice">
-      Use your course-approved AI tool separately. This dashboard does not call
-      an AI service. Copying information into that tool shares it with that
-      service; omit sensitive information and check course policy. No profile
-      information is included automatically. AI output can contain mistakes and
-      assumptions.
-    </p>
+    <p className="external-ai-notice">{t("Use your course-approved AI tool separately. This dashboard does not call an AI service. Copying information into that tool shares it with that service; omit sensitive information and check course policy. No profile information is included automatically. AI output can contain mistakes and assumptions.")}</p>
   );
 }

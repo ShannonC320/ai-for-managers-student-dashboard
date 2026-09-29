@@ -1,17 +1,18 @@
+import { t } from './i18n.js';
 import { useEffect, useState } from 'react';
 import { capacityComparison, capacityFor, needsReview, parseRecommendation, planningPrompt, selectedWithPrerequisites, sequenceChecks, sequenceHours, taskSnapshot, validCapacityValue } from './planningSupport.js';
 import { ExternalAINotice, PromptOutput } from './PlanningControls.jsx';
 
 function PlanReadout({ sequence, tasks }) {
-  return sequence.length ? <ol className="plan-readout">{sequence.map((step, index) => <li key={step.taskId}><strong>{tasks.find(task => task.id === step.taskId)?.title || `Missing task ${step.taskId}`}</strong><span> · {step.day}</span><p>{step.reason}</p></li>)}</ol> : <p>No work scheduled.</p>;
+  return sequence.length ? <ol className="plan-readout">{sequence.map((step, index) => <li key={step.taskId}><strong>{tasks.find(task => task.id === step.taskId)?.title || t(`Missing task ${step.taskId}`)}</strong><span> · {t(step.day)}</span><p>{step.reason}</p></li>)}</ol> : <p>{t("No work scheduled.")}</p>;
 }
 
 function PlanChecks({ sequence, tasks, capacity, today }) {
   const hours = sequenceHours(sequence, tasks);
   const checks = sequenceChecks(sequence, tasks, today);
-  return <div className="plan-checks"><h4>Dashboard checks — rules, not AI</h4><p>Today: {capacityComparison(Math.round(hours.today * 100) / 100, capacity.todayHours)}</p><p>Tomorrow: {capacityComparison(Math.round(hours.tomorrow * 100) / 100, capacity.tomorrowHours)}</p>
-    <p className="muted">Uses each task’s full remaining estimate, excluding completed tasks. This compares time totals, not personal feasibility. No task splitting or hidden rescheduling.</p>
-    {checks.length ? <ul className="review-flags">{checks.map(check => <li key={check}>{check}</li>)}</ul> : <p>No dependency-order or deadline conflicts detected in this sequence. Still review the assumptions.</p>}
+  return <div className="plan-checks"><h4>{t("Dashboard checks — rules, not AI")}</h4><p>{t("Today: ")}{t(capacityComparison(Math.round(hours.today * 100) / 100, capacity.todayHours))}</p><p>{t("Tomorrow: ")}{t(capacityComparison(Math.round(hours.tomorrow * 100) / 100, capacity.tomorrowHours))}</p>
+    <p className="muted">{t("Uses each task’s full remaining estimate, excluding completed tasks. This compares time totals, not personal feasibility. No task splitting or hidden rescheduling.")}</p>
+    {checks.length ? <ul className="review-flags">{checks.map(check => <li key={check}>{t(check)}</li>)}</ul> : <p>{t("No dependency-order or deadline conflicts detected in this sequence. Still review the assumptions.")}</p>}
   </div>;
 }
 
@@ -69,40 +70,40 @@ export default function AIPlanning({ tasks, today, store, disabled }) {
     if (save({ ...data, decision })) { setError(''); setMessage(status === 'accepted' ? 'Your accepted plan and explanation are saved locally.' : 'Your rejection and explanation are saved locally.'); }
   }
   const eligible = data.exchange ? JSON.parse(data.exchange.snapshot).filter(task => !task.completed) : [];
-  return <details className="panel ai-feature"><summary>Prepare AI Planning Prompt</summary>
-    <ExternalAINotice /><p>AI proposes → dashboard checks → student evaluates → student decides.</p>
-    {(error || store.error) && <p role="alert" className="error-message">{error || store.error}</p>}
-    {message && <p role="status" className="success-message">{message}</p>}
-    <fieldset className="dependency-picker"><legend>Select tasks to include</legend><p className="muted">Prerequisites are included automatically with their completion status. Review the generated prompt before sharing.</p>
-      <button type="button" className="secondary-button" onClick={() => setSelected(tasks.filter(task => !task.completed).map(task => task.id))}>Select unfinished tasks</button>
-      <div className="checklist">{tasks.filter(task => !task.completed).map(task => <label key={task.id}><input type="checkbox" checked={selected.includes(task.id)} onChange={() => setSelected(selected.includes(task.id) ? selected.filter(id => id !== task.id) : [...selected, task.id])} />Include {task.title}</label>)}</div>
-      {!tasks.some(task => !task.completed) && <p>Add an unfinished task first.</p>}
-      <p className="muted">{included.length} tasks including prerequisites in this selection.</p>
+  return <details className="panel ai-feature"><summary>{t("Prepare AI Planning Prompt")}</summary>
+    <ExternalAINotice /><p>{t("AI proposes → dashboard checks → student evaluates → student decides.")}</p>
+    {(error || store.error) && <p role="alert" className="error-message">{t(error || store.error)}</p>}
+    {message && <p role="status" className="success-message">{t(message)}</p>}
+    <fieldset className="dependency-picker"><legend>{t("Select tasks to include")}</legend><p className="muted">{t("Prerequisites are included automatically with their completion status. Review the generated prompt before sharing.")}</p>
+      <button type="button" className="secondary-button" onClick={() => setSelected(tasks.filter(task => !task.completed).map(task => task.id))}>{t("Select unfinished tasks")}</button>
+      <div className="checklist">{tasks.filter(task => !task.completed).map(task => <label key={task.id}><input type="checkbox" checked={selected.includes(task.id)} onChange={() => setSelected(selected.includes(task.id) ? selected.filter(id => id !== task.id) : [...selected, task.id])} />{t("Include ")}{task.title}</label>)}</div>
+      {!tasks.some(task => !task.completed) && <p>{t("Add an unfinished task first.")}</p>}
+      <p className="muted">{included.length}{t(" tasks including prerequisites in this selection.")}</p>
     </fieldset>
-    <div className="task-form-grid"><label>Available hours today<input type="number" min="0" max="24" step="any" value={hoursToday} onChange={event => setHoursToday(event.target.value)} /></label><label>Available hours tomorrow<input type="number" min="0" max="24" step="any" value={hoursTomorrow} onChange={event => setHoursTomorrow(event.target.value)} /></label></div>
-    <p className="muted">Leave blank if unknown; zero means no available time. Availability belongs to today’s date and is not carried forward automatically.</p>
-    <div className="task-actions"><button type="button" className="secondary-button" disabled={locked} onClick={() => { if (budgetValid() && save({ ...data, capacity: activeCapacity })) { setError(''); setMessage('Available time saved for today and tomorrow.'); } }}>Save available time</button><button type="button" className="primary-button" disabled={locked} onClick={prepare}>Generate planning prompt</button></div>
-    {data.recommendation && <p className="muted">Preparing a new prompt starts a new review and replaces the previous recommendation/decision record. Existing tasks are never replaced.</p>}
-    <PromptOutput value={data.exchange?.prompt} label="Planning prompt" />
-    {stale && <p className="review-flags" role="status"><strong>Needs review.</strong> Tasks, available time, or the planning date changed since this prompt was prepared. Compare current facts below or prepare a fresh prompt.</p>}
-    <label>AI planning response<textarea rows={5} maxLength={100000} value={response} onChange={event => setResponse(event.target.value)} placeholder="Paste the complete JSON recommendation from your approved AI tool." /></label>
-    <button type="button" className="secondary-button" disabled={locked} onClick={importPlan}>Review AI recommendation</button>
+    <div className="task-form-grid"><label>{t("Available hours today")}<input type="number" min="0" max="24" step="any" value={hoursToday} onChange={event => setHoursToday(event.target.value)} /></label><label>{t("Available hours tomorrow")}<input type="number" min="0" max="24" step="any" value={hoursTomorrow} onChange={event => setHoursTomorrow(event.target.value)} /></label></div>
+    <p className="muted">{t("Leave blank if unknown; zero means no available time. Availability belongs to today’s date and is not carried forward automatically.")}</p>
+    <div className="task-actions"><button type="button" className="secondary-button" disabled={locked} onClick={() => { if (budgetValid() && save({ ...data, capacity: activeCapacity })) { setError(''); setMessage('Available time saved for today and tomorrow.'); } }}>{t("Save available time")}</button><button type="button" className="primary-button" disabled={locked} onClick={prepare}>{t("Generate planning prompt")}</button></div>
+    {data.recommendation && <p className="muted">{t("Preparing a new prompt starts a new review and replaces the previous recommendation/decision record. Existing tasks are never replaced.")}</p>}
+    <PromptOutput value={data.exchange?.prompt} label={t("Planning prompt")} />
+    {stale && <p className="review-flags" role="status"><strong>{t("Needs review.")}</strong>{t(" Tasks, available time, or the planning date changed since this prompt was prepared. Compare current facts below or prepare a fresh prompt.")}</p>}
+    <label>{t("AI planning response")}<textarea rows={5} maxLength={100000} value={response} onChange={event => setResponse(event.target.value)} placeholder={t("Paste the complete JSON recommendation from your approved AI tool.")} /></label>
+    <button type="button" className="secondary-button" disabled={locked} onClick={importPlan}>{t("Review AI recommendation")}</button>
     {data.recommendation && <div className="plan-review-grid">
-      <section className="ai-recommendation" aria-label="AI recommendation"><div className="eyebrow">AI suggestion · not approved</div><h2>AI recommendation</h2><p className="muted">Original proposed order and explanation, preserved for comparison.</p><PlanReadout sequence={data.recommendation.sequence} tasks={JSON.parse(data.exchange.snapshot)} />
-        <h3>Assumptions to check</h3>{data.recommendation.assumptions.length ? <ul>{data.recommendation.assumptions.map((assumption, index) => <li key={index}>{assumption}</li>)}</ul> : <p>No assumptions supplied. Check for unstated assumptions.</p>}
-        <h3>Work not scheduled by AI</h3>{data.recommendation.unscheduled.length ? <ul>{data.recommendation.unscheduled.map(item => <li key={item.taskId}>{eligible.find(task => task.id === item.taskId)?.title || item.taskId}: {item.reason}</li>)}</ul> : <p>All selected unfinished work was included.</p>}
+      <section className="ai-recommendation" aria-label={t("AI recommendation")}><div className="eyebrow">{t("AI suggestion · not approved")}</div><h2>{t("AI recommendation")}</h2><p className="muted">{t("Original proposed order and explanation, preserved for comparison.")}</p><PlanReadout sequence={data.recommendation.sequence} tasks={JSON.parse(data.exchange.snapshot)} />
+        <h3>{t("Assumptions to check")}</h3>{data.recommendation.assumptions.length ? <ul>{data.recommendation.assumptions.map((assumption, index) => <li key={index}>{assumption}</li>)}</ul> : <p>{t("No assumptions supplied. Check for unstated assumptions.")}</p>}
+        <h3>{t("Work not scheduled by AI")}</h3>{data.recommendation.unscheduled.length ? <ul>{data.recommendation.unscheduled.map(item => <li key={item.taskId}>{eligible.find(task => task.id === item.taskId)?.title || item.taskId}: {item.reason}</li>)}</ul> : <p>{t("All selected unfinished work was included.")}</p>}
         <PlanChecks sequence={data.recommendation.sequence} tasks={tasks} capacity={currentCapacity} today={today} />
       </section>
-      <section className="student-plan" aria-label="Student decision"><div className="eyebrow">Your judgment</div><h2>Review your plan</h2><p className="muted">Reorder, change the planned day or reason, and exclude work. These edits do not change task fields. Draft edits are saved only when you save your decision.</p>
-        <ol className="editable-plan">{draft.map((step, index) => <li key={step.taskId}><h3>{tasks.find(task => task.id === step.taskId)?.title || 'Missing task'}</h3><label>Planned day for step {index + 1}<select value={step.day} onChange={event => revise(draft.map((item, i) => i === index ? { ...item, day: event.target.value } : item))}><option value="today">Today</option><option value="tomorrow">Tomorrow</option></select></label><label>Your reason for step {index + 1}<textarea rows={2} maxLength={2000} value={step.reason} onChange={event => revise(draft.map((item, i) => i === index ? { ...item, reason: event.target.value } : item))} /></label>
-          <div className="task-actions"><button className="secondary-button" disabled={index === 0} onClick={() => move(index, -1)}>Move step {index + 1} up</button><button className="secondary-button" disabled={index === draft.length - 1} onClick={() => move(index, 1)}>Move step {index + 1} down</button><button className="remove-button" onClick={() => revise(draft.filter((_, i) => i !== index))}>Exclude step {index + 1}</button></div>
+      <section className="student-plan" aria-label={t("Student decision")}><div className="eyebrow">{t("Your judgment")}</div><h2>{t("Review your plan")}</h2><p className="muted">{t("Reorder, change the planned day or reason, and exclude work. These edits do not change task fields. Draft edits are saved only when you save your decision.")}</p>
+        <ol className="editable-plan">{draft.map((step, index) => <li key={step.taskId}><h3>{tasks.find(task => task.id === step.taskId)?.title || t('Missing task')}</h3><label>{t("Planned day for step ")}{index + 1}<select value={step.day} onChange={event => revise(draft.map((item, i) => i === index ? { ...item, day: event.target.value } : item))}><option value="today">{t("Today")}</option><option value="tomorrow">{t("Tomorrow")}</option></select></label><label>{t("Your reason for step ")}{index + 1}<textarea rows={2} maxLength={2000} value={step.reason} onChange={event => revise(draft.map((item, i) => i === index ? { ...item, reason: event.target.value } : item))} /></label>
+          <div className="task-actions"><button className="secondary-button" disabled={index === 0} onClick={() => move(index, -1)}>{t("Move step ")}{index + 1}{t(" up")}</button><button className="secondary-button" disabled={index === draft.length - 1} onClick={() => move(index, 1)}>{t("Move step ")}{index + 1}{t(" down")}</button><button className="remove-button" onClick={() => revise(draft.filter((_, i) => i !== index))}>{t("Exclude step ")}{index + 1}</button></div>
         </li>)}</ol>
-        <div className="excluded-work"><h3>Outside your draft plan</h3>{eligible.filter(task => !draft.some(step => step.taskId === task.id)).map(task => <p key={task.id}>{task.title} <button className="text-button" onClick={() => revise([...draft, { taskId: task.id, day: 'tomorrow', reason: 'Added by student; explain this choice.' }])}>Include {task.title} in plan</button></p>)}</div>
+        <div className="excluded-work"><h3>{t("Outside your draft plan")}</h3>{eligible.filter(task => !draft.some(step => step.taskId === task.id)).map(task => <p key={task.id}>{task.title} <button className="text-button" onClick={() => revise([...draft, { taskId: task.id, day: 'tomorrow', reason: 'Added by student; explain this choice.' }])}>{t("Include ")}{task.title}{t(" in plan")}</button></p>)}</div>
         <PlanChecks sequence={draft} tasks={tasks} capacity={currentCapacity} today={today} />
-        <label>My decision and explanation<textarea rows={3} maxLength={2000} value={explanation} onChange={event => { setExplanation(event.target.value); setAcknowledged(false); }} placeholder="What did you accept, change, or reject, and why?" /></label>
-        <label className="review-check"><input type="checkbox" checked={acknowledged} onChange={event => setAcknowledged(event.target.checked)} />I reviewed the assumptions, capacity, dependencies, and any Needs review notice. I take responsibility for this decision.</label>
-        <div className="task-actions"><button className="primary-button" disabled={locked} onClick={() => decide('accepted')}>Save accepted plan</button><button className="remove-button" disabled={locked} onClick={() => decide('rejected')}>Reject recommendation</button></div>
-        {data.decision && <section className="accepted-plan" aria-label="Saved student decision"><h3>{data.decision.status === 'accepted' ? 'Student-approved plan' : 'Student rejected recommendation'}</h3><p>{data.decision.explanation}</p><PlanReadout sequence={data.decision.sequence} tasks={tasks} /><p className="muted">Saved {new Date(data.decision.savedAt).toLocaleString()}. {stale ? 'Needs review against changed facts.' : 'This is your saved decision; drafts above do not change it until saved.'}</p></section>}
+        <label>{t("My decision and explanation")}<textarea rows={3} maxLength={2000} value={explanation} onChange={event => { setExplanation(event.target.value); setAcknowledged(false); }} placeholder={t("What did you accept, change, or reject, and why?")} /></label>
+        <label className="review-check"><input type="checkbox" checked={acknowledged} onChange={event => setAcknowledged(event.target.checked)} />{t("I reviewed the assumptions, capacity, dependencies, and any Needs review notice. I take responsibility for this decision.")}</label>
+        <div className="task-actions"><button className="primary-button" disabled={locked} onClick={() => decide('accepted')}>{t("Save accepted plan")}</button><button className="remove-button" disabled={locked} onClick={() => decide('rejected')}>{t("Reject recommendation")}</button></div>
+        {data.decision && <section className="accepted-plan" aria-label={t("Saved student decision")}><h3>{data.decision.status === 'accepted' ? t('Student-approved plan') : t('Student rejected recommendation')}</h3><p>{data.decision.explanation}</p><PlanReadout sequence={data.decision.sequence} tasks={tasks} /><p className="muted">{t("Saved ")}{new Date(data.decision.savedAt).toLocaleString()}. {stale ? t('Needs review against changed facts.') : t('This is your saved decision; drafts above do not change it until saved.')}</p></section>}
       </section>
     </div>}
   </details>;

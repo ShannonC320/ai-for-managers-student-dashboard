@@ -14,6 +14,8 @@ Keep the terminal open while using the dashboard. Press **Ctrl+C** in the termin
 
 ## Useful checks
 
+The header's English / Español control changes interface text only. Its preference is saved separately as `ai-managers-interface-language-v1`; existing profile, task, research, analysis, workflow, and Grace records retain their original storage keys and content. `src/i18n.js` and `src/spanish.js` hold the shared interface translations. Keep translations at display boundaries, preserve explicit English enum values on select options, and never pass student text, pasted AI responses, datasets, or approved source documents through the translator. Language changes do not remount the current workspace or clear drafts. The supplied Coastal Life CSV remains unchanged when the interface language changes.
+
 - `pnpm test` runs the automated interaction and planning-rule checks.
 - `pnpm build` produces the static application in `dist/`.
 - `pnpm exec vite preview` serves the production build for a local check.

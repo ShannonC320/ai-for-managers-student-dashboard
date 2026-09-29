@@ -381,3 +381,25 @@ ul.review-flags { padding-left: 32px; }
 .workflows-page fieldset { min-width: 0; margin: 16px 0; border: 1px solid #cad6dd; border-radius: 8px; }
 .workflows-page fieldset legend { font-weight: 700; }
 .workflows-page select { max-width: 100%; }
+
+/* Shared orientation and application transitions, within existing weekly pages. */
+.workspace-intro { margin: 0 0 20px; padding: 16px 20px; border-left: 4px solid #277c82; background: #edf5f8; border-radius: 8px; }
+.workspace-intro h2 { margin: 0 0 8px; font-size: 1rem; }
+.workspace-intro p { margin: 0; line-height: 1.6; }
+.coastal-intro { margin-top: 36px; border-top: 1px solid #cad6dd; border-left-color: #a96d28; background: #faf5ed; }
+.supplied-information { margin-bottom: 24px; }
+.supplied-information summary { cursor: pointer; font-weight: 700; padding: 6px 0; }
+.language-control { display: flex; align-items: center; gap: 8px; font-size: .8rem; color: #334f5d; }
+.language-control select { width: auto; min-width: 100px; margin: 0; padding: 7px; }
+.topbar { flex-wrap: wrap; gap: 12px; }
+.content-area, .panel, .page-heading > div { min-width: 0; }
+button, summary, label { overflow-wrap: anywhere; }
+:focus-visible { outline: 3px solid #277c82; outline-offset: 3px; }
+@media (max-width: 760px) {
+  .language-control { flex-basis: 100%; justify-content: flex-end; }
+  .topbar .header-location { min-width: 0; flex: 1; }
+  .student-chip { max-width: 45%; overflow-wrap: anywhere; }
+  .workspace-intro { padding: 14px; }
+  .panel-heading { flex-direction: column; align-items: stretch; }
+  .panel-heading button { align-self: flex-start; max-width: 100%; }
+}

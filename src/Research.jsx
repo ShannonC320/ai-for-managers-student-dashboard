@@ -1,4 +1,6 @@
+import { t } from './i18n.js';
 import { useState, useEffect, useRef } from 'react';
+import WorkspaceIntro from './WorkspaceIntro.jsx';
 import { validateResearchRecord, VERIFICATION_STATUSES, makeEmptyRecord } from './research.js';
 
 export default function Research({ records, saveRecords, researchError }) {
@@ -63,9 +65,9 @@ export default function Research({ records, saveRecords, researchError }) {
     <main className="page research-page" id="main-content" tabIndex="-1">
       <div className="page-heading">
         <div>
-          <div className="eyebrow">Week 3 · Research & Verification</div>
-          <h1>Research & Verification</h1>
-          <p>Evaluate claims, check sources, and record what you found. Retain responsibility for your judgment.</p>
+          <div className="eyebrow">{t("Week 3 · Research & Verification")}</div>
+          <h1>{t("Research & Verification")}</h1>
+          <p>{t("Evaluate claims, check sources, and record what you found. Retain responsibility for your judgment.")}</p>
         </div>
         <button
           ref={addButton}
@@ -77,122 +79,109 @@ export default function Research({ records, saveRecords, researchError }) {
             setMessage('');
             setDeleting(null);
           }}
-        >
-          + Add research record
-        </button>
+        >{t("+ Add research record")}</button>
       </div>
 
-      {researchError && <p className="error-message" role="alert">{researchError}</p>}
-      {error && <p className="error-message" role="alert">{error}</p>}
-      {message && <p className="success-message" role="status">{message}</p>}
+      <WorkspaceIntro>{t("Use this workspace for any paper, project, product, or claim. Add a research record, check a source, and record what the evidence supports.")}</WorkspaceIntro>
+      <details className="panel supplied-information"><summary>{t("Coastal Life Management Application — Research example")}</summary>
+        <p>{t("Example question: Should Coastal Life expand into vacation rental management in Charleston?")}</p>
+        <p>{t("Possible research areas: market demand, competition, and rules and restrictions. Use the same records below to investigate claims and verify sources. Records can belong to any research topic.")}</p>
+      </details>
+      {researchError && <p className="error-message" role="alert">{t(researchError)}</p>}
+      {error && <p className="error-message" role="alert">{t(error)}</p>}
+      {message && <p className="success-message" role="status">{t(message)}</p>}
 
       {draft && (
         <section className="panel research-editor" aria-labelledby="editor-title">
-          <h2 id="editor-title">{draft.id ? 'Edit research record' : 'Add a research record'}</h2>
-          <p className="muted">Research question, area, and claim are always required. Source and finding are optional while Pending; they become required when you select a verification outcome.</p>
+          <h2 id="editor-title">{draft.id ? t('Edit research record') : t('Add a research record')}</h2>
+          <p className="muted">{t("Research question, area, and claim are always required. Source and finding are optional while Pending; they become required when you select a verification outcome.")}</p>
           <form onSubmit={save}>
             <div className="research-form-grid">
-              <label className="span-two">
-                Research question or topic (required)
-                <input
+              <label className="span-two">{t("Research question or topic (required)")}<input
                   ref={questionInput}
                   name="question"
                   value={draft.question}
                   onChange={field}
-                  placeholder="e.g., Should Coastal Life expand into vacation rental management in Charleston?"
+                  placeholder={t("e.g., What evidence supports the claim I am researching?")}
                   required
                   maxLength={500}
                 />
               </label>
 
-              <label>
-                Research area or category (required)
-                <input
+              <label>{t("Research area or category (required)")}<input
                   name="area"
                   value={draft.area}
                   onChange={field}
-                  placeholder="e.g., Market demand, Competition, Rules and restrictions"
+                  placeholder={t("e.g., Market demand, Competition, Rules and restrictions")}
                   required
                   maxLength={100}
                 />
               </label>
 
-              <label>
-                Verification status (required)
-                <select name="status" value={draft.status} onChange={field} required>
+              <label>{t("Verification status (required)")}<select name="status" value={draft.status} onChange={field} required>
                   {VERIFICATION_STATUSES.map(value => (
-                    <option key={value}>{value}</option>
+                    <option key={value} value={value}>{t(value)}</option>
                   ))}
                 </select>
                 <small>{
-                  {
+                  t({
                     Pending: 'Pending: verification is incomplete. Check a source before selecting a final status.',
                     Verified: 'Verified: the source supports the full claim.',
                     'Partly verified': 'Partly verified: only part of the claim is supported or qualifications remain.',
                     'Not verified': 'Not verified: the evidence does not adequately support the claim.',
-                  }[draft.status]
+                  }[draft.status])
                 }</small>
               </label>
 
-              <label className="span-two">
-                Claim to check (required)
-                <textarea
+              <label className="span-two">{t("Claim to check (required)")}<textarea
                   name="claim"
                   value={draft.claim}
                   onChange={field}
-                  placeholder="State the specific claim you are investigating."
+                  placeholder={t("State the specific claim you are investigating.")}
                   rows={3}
                   required
                   maxLength={2000}
                 />
               </label>
 
-              <label className="span-two">
-                Verification source {draft.status === 'Pending' ? '(optional)' : '(required)'}
+              <label className="span-two">{t("Verification source ")}{draft.status === 'Pending' ? t('(optional)') : t('(required)')}
                 <textarea
                   name="source"
                   value={draft.source}
                   onChange={field}
-                  placeholder="Describe where you checked this claim. Include author, publication, date, and relevant details."
+                  placeholder={t("Describe where you checked this claim. Include author, publication, date, and relevant details.")}
                   rows={3}
                   maxLength={2000}
                 />
-                <small>{draft.status === 'Pending' ? 'Optional while pending.' : 'Required for this status.'}</small>
+                <small>{draft.status === 'Pending' ? t('Optional while pending.') : t('Required for this status.')}</small>
               </label>
 
-              <label className="span-two">
-                Source URL (optional)
-                <input
+              <label className="span-two">{t("Source URL (optional)")}<input
                   name="sourceUrl"
                   value={draft.sourceUrl}
                   onChange={field}
-                  placeholder="e.g., https://example.com/article"
+                  placeholder={t("e.g., https://example.com/article")}
                   maxLength={500}
                 />
-                <small>Not all sources have URLs. Document the source in the field above.</small>
+                <small>{t("Not all sources have URLs. Document the source in the field above.")}</small>
               </label>
 
-              <label className="span-two">
-                What you found after checking the source {draft.status === 'Pending' ? '(optional)' : '(required)'}
+              <label className="span-two">{t("What you found after checking the source ")}{draft.status === 'Pending' ? t('(optional)') : t('(required)')}
                 <textarea
                   name="finding"
                   value={draft.finding}
                   onChange={field}
-                  placeholder="Describe what the source actually established. Be specific about what supports or does not support the claim."
+                  placeholder={t("Describe what the source actually established. Be specific about what supports or does not support the claim.")}
                   rows={3}
                   maxLength={2000}
                 />
-                <small>{draft.status === 'Pending' ? 'Optional while pending.' : 'Required for this status.'} This is your judgment based on what the source actually says, not what the source claims or what you hoped to find.</small>
+                <small>{draft.status === 'Pending' ? t('Optional while pending.') : t('Required for this status.')}{t(" This is your judgment based on what the source actually says, not what the source claims or what you hoped to find.")}</small>
               </label>
             </div>
 
             <div className="form-actions">
-              <button type="button" className="secondary-button" onClick={closeForm}>
-                Cancel
-              </button>
-              <button className="primary-button" type="submit">
-                Save record
-              </button>
+              <button type="button" className="secondary-button" onClick={closeForm}>{t("Cancel")}</button>
+              <button className="primary-button" type="submit">{t("Save record")}</button>
             </div>
           </form>
         </section>
@@ -200,14 +189,14 @@ export default function Research({ records, saveRecords, researchError }) {
 
       <section className="panel research-panel" aria-labelledby="records-title">
         <div className="panel-heading">
-          <h2 id="records-title">Saved research records</h2>
-          <span className="muted">{records.length} record{records.length !== 1 ? 's' : ''}</span>
+          <h2 id="records-title">{t("Saved research records")}</h2>
+          <span className="muted">{records.length}{t(" record")}{records.length !== 1 ? t('s') : ''}</span>
         </div>
 
         {!records.length ? (
           <div className="empty-state">
-            <h3>No research records yet</h3>
-            <p>Create your first record to begin researching and verifying claims.</p>
+            <h3>{t("No research records yet")}</h3>
+            <p>{t("Create your first record to begin researching and verifying claims.")}</p>
           </div>
         ) : (
           <ul className="research-list">
@@ -216,7 +205,7 @@ export default function Research({ records, saveRecords, researchError }) {
                 <div className="research-header">
                   <h3>{record.question}</h3>
                   <span className={`verification-badge verification-${record.status.toLowerCase().replace(' ', '-')}`}>
-                    {record.status}
+                    {t(record.status)}
                   </span>
                 </div>
 
@@ -226,22 +215,22 @@ export default function Research({ records, saveRecords, researchError }) {
 
                 <div className="research-content">
                   <div className="research-section">
-                    <h4>Claim</h4>
+                    <h4>{t("Claim")}</h4>
                     <p className="research-text">{record.claim}</p>
                   </div>
 
                   {(record.source || record.finding || record.sourceUrl) && (
                     <div className="research-section">
-                      <h4>Verification</h4>
+                      <h4>{t("Verification")}</h4>
                       {record.source && (
                         <div>
-                          <span className="research-label">Source:</span>
+                          <span className="research-label">{t("Source:")}</span>
                           <p className="research-text">{record.source}</p>
                         </div>
                       )}
                       {record.sourceUrl && (
                         <div>
-                          <span className="research-label">URL:</span>
+                          <span className="research-label">{t("URL:")}</span>
                           <p className="research-text">
                             <a href={record.sourceUrl} target="_blank" rel="noopener noreferrer">
                               {record.sourceUrl}
@@ -251,7 +240,7 @@ export default function Research({ records, saveRecords, researchError }) {
                       )}
                       {record.finding && (
                         <div>
-                          <span className="research-label">Finding:</span>
+                          <span className="research-label">{t("Finding:")}</span>
                           <p className="research-text">{record.finding}</p>
                         </div>
                       )}
@@ -269,10 +258,8 @@ export default function Research({ records, saveRecords, researchError }) {
                       setMessage('');
                       setDeleting(null);
                     }}
-                    aria-label={`Edit research record: ${record.question}`}
-                  >
-                    Edit
-                  </button>
+                    aria-label={t(`Edit research record: ${record.question}`)}
+                  >{t("Edit")}</button>
                   <button
                     className="remove-button"
                     disabled={!!draft}
@@ -280,24 +267,20 @@ export default function Research({ records, saveRecords, researchError }) {
                       setDeleting(record.id);
                       setMessage('');
                     }}
-                    aria-label={`Delete research record: ${record.question}`}
-                  >
-                    Delete
-                  </button>
+                    aria-label={t(`Delete research record: ${record.question}`)}
+                  >{t("Delete")}</button>
                 </div>
 
                 {deleting === record.id && (
                   <div className="delete-confirmation">
-                    <p>Delete this research record? This cannot be undone.</p>
+                    <p>{t("Delete this research record? This cannot be undone.")}</p>
                     <button
                       type="button"
                       className="text-button"
                       onClick={() => {
                         setDeleting(null);
                       }}
-                    >
-                      Keep record
-                    </button>
+                    >{t("Keep record")}</button>
                     <button
                       type="button"
                       className="remove-button"
@@ -306,9 +289,7 @@ export default function Research({ records, saveRecords, researchError }) {
                           setDeleting(null);
                         }
                       }}
-                    >
-                      Confirm delete
-                    </button>
+                    >{t("Confirm delete")}</button>
                   </div>
                 )}
               </li>
@@ -317,7 +298,7 @@ export default function Research({ records, saveRecords, researchError }) {
         )}
       </section>
 
-      <p className="storage-note">Saved only in this browser on this device. Clearing site data removes your research records. No account or cloud sync.</p>
+      <p className="storage-note">{t("Saved only in this browser on this device. Clearing site data removes your research records. No account or cloud sync.")}</p>
     </main>
   );
 }

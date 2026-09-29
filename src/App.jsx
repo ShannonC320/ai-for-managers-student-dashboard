@@ -6,6 +6,7 @@ import Workflows from './Workflows.jsx';
 import Grace from './Grace.jsx';
 import useDashboardData from './useDashboardData.js';
 import PlanningSummary from './PlanningSummary.jsx';
+import { LANGUAGE_KEY, readLanguage, setLanguage, t } from './i18n.js';
 
 export const STORAGE_KEY = 'ai-managers-student-profile';
 
@@ -49,18 +50,16 @@ function Home({ profile, onOpenProfile, onOpenPlanner, dashboard }) {
   return (
     <main className="page" id="main-content" tabIndex="-1">
       <section className="welcome-card">
-        <div className="eyebrow">AI for Managers · Your course workspace</div>
-        <h1>{firstName ? `Welcome, ${firstName}.` : 'Welcome to your dashboard.'}</h1>
-        <p>
-          Keep your academic goals in view and turn upcoming assignments into a manageable plan.
-          Your workspace grows with you throughout the seven-week course.
-        </p>
+        <div className="eyebrow">{t("AI for Managers · Your course workspace")}</div>
+        <h1>{firstName ? t(`Welcome, ${firstName}.`) : t('Welcome to your dashboard.')}</h1>
+        <p>{t("Keep your academic goals in view and turn upcoming assignments into a manageable plan. Your workspace grows with you throughout the seven-week course.")}</p>
+        <p>{t("Start with Profile, then add your work in Planner. Use Research to check claims, Analysis to review evidence, Workflows to test automation, and Grace to practice asking a bounded assistant.")}</p>
         <button
           className="primary-button"
           type="button"
           onClick={onOpenProfile}
         >
-          {profile.name ? 'View your profile' : 'Set up your profile'}
+          {profile.name ? t('View your profile') : t('Set up your profile')}
         </button>
       </section>
 
@@ -75,28 +74,22 @@ function Home({ profile, onOpenProfile, onOpenPlanner, dashboard }) {
       >
         <div className="card-icon" aria-hidden="true">01</div>
         <div>
-          <h2 id="foundation-title">A foundation built to grow</h2>
-          <p>
-            Add your academic information and goals in Profile. Your details stay in this browser on this device.
-          </p>
+          <h2 id="foundation-title">{t("A foundation built to grow")}</h2>
+          <p>{t("Add your academic information and goals in Profile. Your details stay in this browser on this device.")}</p>
         </div>
       </section>
 
       <section className="foundation-card planner-home-card">
         <div className="card-icon" aria-hidden="true">02</div>
         <div>
-          <div className="eyebrow">Planning, Priorities & Workload</div>
-          <h2>Build your next plan</h2>
-          <p>
-            Bring deadlines, priorities, and estimated effort together. Spot busy days and decide what needs your attention first.
-          </p>
+          <div className="eyebrow">{t("Planning, Priorities & Workload")}</div>
+          <h2>{t("Build your next plan")}</h2>
+          <p>{t("Bring deadlines, priorities, and estimated effort together. Spot busy days and decide what needs your attention first.")}</p>
           <button
             className="secondary-button"
             type="button"
             onClick={onOpenPlanner}
-          >
-            Open Planner
-          </button>
+          >{t("Open Planner")}</button>
         </div>
       </section>
     </main>
@@ -170,9 +163,9 @@ function Profile({ profile, onSave }) {
       <main className="page" id="main-content" tabIndex="-1">
         <div className="page-heading">
           <div>
-            <div className="eyebrow">Student profile</div>
-            <h1>Your academic snapshot</h1>
-            <p>Basic information that helps make this dashboard yours.</p>
+            <div className="eyebrow">{t("Student profile")}</div>
+            <h1>{t("Your academic snapshot")}</h1>
+            <p>{t("Basic information that helps make this dashboard yours.")}</p>
           </div>
 
           <button
@@ -182,40 +175,38 @@ function Profile({ profile, onSave }) {
               setSavedMessage('');
               setIsEditing(true);
             }}
-          >
-            Edit profile
-          </button>
+          >{t("Edit profile")}</button>
         </div>
 
         {savedMessage && (
           <p className="success-message" role="status">
-            {savedMessage}
+            {t(savedMessage)}
           </p>
         )}
 
         <section className="profile-card">
           <div className="profile-initial" aria-hidden="true">
-            {profile.name.charAt(0).toUpperCase() || 'S'}
+            {profile.name.charAt(0).toUpperCase() || t('S')}
           </div>
 
           <div className="profile-name">
-            <span>Student</span>
-            <h2>{profile.name || 'Name not added'}</h2>
+            <span>{t("Student")}</span>
+            <h2>{profile.name || t('Name not added')}</h2>
           </div>
 
           <dl className="details-grid">
             <div>
-              <dt>Major</dt>
-              <dd>{profile.major || 'Not added'}</dd>
+              <dt>{t("Major")}</dt>
+              <dd>{profile.major || t('Not added')}</dd>
             </div>
             <div>
-              <dt>Academic year</dt>
-              <dd>{profile.academicYear || 'Not added'}</dd>
+              <dt>{t("Academic year")}</dt>
+              <dd>{profile.academicYear ? t(profile.academicYear) : t('Not added')}</dd>
             </div>
           </dl>
 
           <div className="goals-display">
-            <h3>Academic goals</h3>
+            <h3>{t("Academic goals")}</h3>
             {goals.length ? (
               <ul>
                 {goals.map((goal, index) => (
@@ -223,7 +214,7 @@ function Profile({ profile, onSave }) {
                 ))}
               </ul>
             ) : (
-              <p>No goals added yet.</p>
+              <p>{t("No goals added yet.")}</p>
             )}
           </div>
         </section>
@@ -235,78 +226,69 @@ function Profile({ profile, onSave }) {
     <main className="page" id="main-content" tabIndex="-1">
       <div className="page-heading compact">
         <div>
-          <div className="eyebrow">Student profile</div>
-          <h1>{profile.name ? 'Edit your profile' : 'Create your profile'}</h1>
-          <p>Add the basics below. You can return and change them at any time.</p>
+          <div className="eyebrow">{t("Student profile")}</div>
+          <h1>{profile.name ? t('Edit your profile') : t('Create your profile')}</h1>
+          <p>{t("Add the basics below. You can return and change them at any time.")}</p>
         </div>
       </div>
 
       {saveError && (
         <p className="error-message" role="alert">
-          {saveError}
+          {t(saveError)}
         </p>
       )}
 
       <form className="profile-form" onSubmit={saveProfile}>
         <div className="form-grid">
-          <label>
-            Full name
-            <input
+          <label>{t("Full name")}<input
               name="name"
               value={draft.name}
               onChange={updateField}
-              placeholder="e.g., Jordan Lee"
+              placeholder={t("e.g., Jordan Lee")}
               required
             />
           </label>
 
-          <label>
-            Major
-            <input
+          <label>{t("Major")}<input
               name="major"
               value={draft.major}
               onChange={updateField}
-              placeholder="e.g., Business Administration"
+              placeholder={t("e.g., Business Administration")}
               required
             />
           </label>
 
-          <label>
-            Academic year
-            <select
+          <label>{t("Academic year")}<select
               name="academicYear"
               value={draft.academicYear}
               onChange={updateField}
               required
             >
-              <option value="">Select your year</option>
+              <option value="">{t("Select your year")}</option>
               {academicYears.map(year => (
-                <option key={year}>{year}</option>
+                <option key={year} value={year}>{t(year)}</option>
               ))}
             </select>
           </label>
         </div>
 
         <fieldset className="goals-fieldset">
-          <legend>Academic goals</legend>
-          <p className="field-help">
-            Add short statements about what you hope to achieve academically.
-          </p>
+          <legend>{t("Academic goals")}</legend>
+          <p className="field-help">{t("Add short statements about what you hope to achieve academically.")}</p>
 
           {draft.goals.map((goal, index) => (
             <div className="goal-row" key={index}>
               <label
                 className="sr-only"
                 htmlFor={`goal-${index}`}
-              >
-                Academic goal {index + 1}
+              >{t("Academic goal ")}{index + 1}
               </label>
 
               <input
                 id={`goal-${index}`}
                 value={goal}
                 onChange={event => updateGoal(index, event.target.value)}
-                placeholder="e.g., Become more confident evaluating AI tools"
+                placeholder={t("e.g., Become more confident evaluating AI tools")}
                 maxLength="140"
               />
 
@@ -314,10 +296,8 @@ function Profile({ profile, onSave }) {
                 className="remove-button"
                 type="button"
                 onClick={() => removeGoal(index)}
-                aria-label={`Remove goal ${index + 1}`}
-              >
-                Remove
-              </button>
+                aria-label={t(`Remove goal ${index + 1}`)}
+              >{t("Remove")}</button>
             </div>
           ))}
 
@@ -325,9 +305,7 @@ function Profile({ profile, onSave }) {
             className="add-button"
             type="button"
             onClick={addGoal}
-          >
-            + Add another goal
-          </button>
+          >{t("+ Add another goal")}</button>
         </fieldset>
 
         <div className="form-actions">
@@ -340,14 +318,10 @@ function Profile({ profile, onSave }) {
                 setSaveError('');
                 setIsEditing(false);
               }}
-            >
-              Cancel
-            </button>
+            >{t("Cancel")}</button>
           )}
 
-          <button className="primary-button" type="submit">
-            Save profile
-          </button>
+          <button className="primary-button" type="submit">{t("Save profile")}</button>
         </div>
       </form>
     </main>
@@ -355,6 +329,8 @@ function Profile({ profile, onSave }) {
 }
 
 export default function App() {
+  const [language, updateLanguage] = useState(readLanguage);
+  const [languageError, setLanguageError] = useState('');
   const [activePage, setActivePage] = useState(pageFromLocation);
   const [profile, setProfile] = useState(readProfile);
   const dashboard = useDashboardData();
@@ -382,8 +358,9 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => { document.documentElement.lang = language; }, [language]);
   useEffect(() => {
-    document.title = `${
+    document.title = `${t(
       activePage === 'assistant' ? 'AI Assistant' : activePage === 'workflows' ? 'Workflows' : activePage === 'analysis' ? 'Analysis' : activePage === 'tasks'
         ? 'Planner'
         : activePage === 'research'
@@ -391,10 +368,10 @@ export default function App() {
           : activePage === 'profile'
             ? 'Profile'
             : 'Home'
-    } | AI for Managers Student Dashboard`;
+    )} | ${t('AI for Managers Student Dashboard')}`;
 
-    document.getElementById('main-content')?.focus();
-  }, [activePage]);
+  }, [activePage, language]);
+  useEffect(() => { document.getElementById('main-content')?.focus(); }, [activePage]);
 
   function navigate(page) {
     if (page === activePage) return;
@@ -424,90 +401,86 @@ export default function App() {
           event.preventDefault();
           document.getElementById('main-content')?.focus();
         }}
-      >
-        Skip to main content
-      </a>
+      >{t("Skip to main content")}</a>
 
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-mark" aria-hidden="true">AI</div>
+          <div className="brand-mark" aria-hidden="true">{t("AI")}</div>
           <div>
-            <span>AI for Managers</span>
-            <strong>Student Dashboard</strong>
+            <span>{t("AI for Managers")}</span>
+            <strong>{t("Student Dashboard")}</strong>
           </div>
         </div>
 
-        <nav aria-label="Main navigation">
+        <nav aria-label={t("Main navigation")}>
           <button
             className={activePage === 'home' ? 'nav-item active' : 'nav-item'}
             onClick={() => navigate('home')}
             aria-current={activePage === 'home' ? 'page' : undefined}
           >
-            <span aria-hidden="true">⌂</span> Home
-          </button>
+            <span aria-hidden="true">⌂</span>{t(" Home")}</button>
 
           <button
             className={activePage === 'profile' ? 'nav-item active' : 'nav-item'}
             onClick={() => navigate('profile')}
             aria-current={activePage === 'profile' ? 'page' : undefined}
           >
-            <span aria-hidden="true">○</span> Profile
-          </button>
+            <span aria-hidden="true">○</span>{t(" Profile")}</button>
 
           <button
             className={activePage === 'tasks' ? 'nav-item active' : 'nav-item'}
             onClick={() => navigate('tasks')}
             aria-current={activePage === 'tasks' ? 'page' : undefined}
           >
-            <span aria-hidden="true">☷</span> Planner / Tasks
-          </button>
+            <span aria-hidden="true">☷</span>{t(" Planner / Tasks")}</button>
 
           <button
             className={activePage === 'research' ? 'nav-item active' : 'nav-item'}
             onClick={() => navigate('research')}
             aria-current={activePage === 'research' ? 'page' : undefined}
           >
-            <span aria-hidden="true">🔍</span> Research
-          </button>
+            <span aria-hidden="true">🔍</span>{t(" Research")}</button>
           <button
             className={activePage === 'analysis' ? 'nav-item active' : 'nav-item'}
             onClick={() => navigate('analysis')}
             aria-current={activePage === 'analysis' ? 'page' : undefined}
           >
-            <span aria-hidden="true">▤</span> Analysis
-          </button>
+            <span aria-hidden="true">▤</span>{t(" Analysis")}</button>
           <button
             className={activePage === 'workflows' ? 'nav-item active' : 'nav-item'}
             onClick={() => navigate('workflows')}
             aria-current={activePage === 'workflows' ? 'page' : undefined}
           >
-            <span aria-hidden="true">⇄</span> Workflows
-          </button>
+            <span aria-hidden="true">⇄</span>{t(" Workflows")}</button>
           <button className={activePage === 'assistant' ? 'nav-item active' : 'nav-item'}
-            onClick={() => navigate('assistant')} aria-current={activePage === 'assistant' ? 'page' : undefined}>
-            AI Assistant
-          </button>
+            onClick={() => navigate('assistant')} aria-current={activePage === 'assistant' ? 'page' : undefined}>{t("AI Assistant")}</button>
         </nav>
 
         <div className="week-badge">
-          <span>Course workspace</span>
-          <strong>Weeks 1–6 of 7</strong>
-          <p>Map. Automate. Control. Test.</p>
+          <span>{t("Course workspace")}</span>
+          <strong>{t("Weeks 1–6 of 7")}</strong>
+          <p>{t("Map. Automate. Control. Test.")}</p>
         </div>
       </aside>
 
       <div className="content-area">
         <header className="topbar">
-          <span className="header-location">
-            Student workspace <span aria-hidden="true">/</span>{' '}
+          <label className="language-control">{t("English / Español")}<select aria-label={t("Interface language")} value={language} onChange={event => {
+              const next = event.target.value;
+              setLanguage(next); updateLanguage(next);
+              try { localStorage.setItem(LANGUAGE_KEY, next); setLanguageError(''); }
+              catch { setLanguageError('Language changed for this visit, but could not be saved in this browser.'); }
+            }}><option value="en" lang="en">{t("English")}</option><option value="es" lang="es">{t("Español")}</option></select>
+          </label>
+          <span className="header-location">{t("Student workspace ")}<span aria-hidden="true">/</span>{' '}
             <strong>
-              {activePage === 'assistant' ? 'AI Assistant' : activePage === 'workflows' ? 'Workflows' : activePage === 'analysis' ? 'Analysis' : activePage === 'home'
-                ? 'Home'
+              {activePage === 'assistant' ? t('AI Assistant') : activePage === 'workflows' ? t('Workflows') : activePage === 'analysis' ? t('Analysis') : activePage === 'home'
+                ? t('Home')
                 : activePage === 'profile'
-                  ? 'Profile'
+                  ? t('Profile')
                   : activePage === 'research'
-                    ? 'Research'
-                    : 'Planner'}
+                    ? t('Research')
+                    : t('Planner')}
             </strong>
           </span>
 
@@ -515,14 +488,15 @@ export default function App() {
             className="student-chip"
             type="button"
             onClick={() => navigate('profile')}
-            aria-label={`Open profile for ${profile.name || 'Student'}`}
+            aria-label={t(`Open profile for ${profile.name || 'Student'}`)}
           >
             <span aria-hidden="true">
-              {profile.name.charAt(0).toUpperCase() || 'S'}
+              {profile.name.charAt(0).toUpperCase() || t('S')}
             </span>
-            {profile.name || 'Student'}
+            {profile.name || t('Student')}
           </button>
         </header>
+        {languageError && <p role="alert" className="error-message">{t(languageError)}</p>}
 
         {activePage === 'home' ? (
           <Home

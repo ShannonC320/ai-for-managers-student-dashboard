@@ -6,6 +6,7 @@ import { ANALYSIS_KEY, parseCSV, numericSummaries, sortRows, datasetCSV, readAna
 import { RESEARCH_KEY } from './research.js';
 import { TASKS_KEY } from './planner.js';
 import { PLANNING_KEY, emptyPlanning } from './planningSupport.js';
+import { coastalDataset } from './coastalExercise.js';
 
 const coastal = `Property,Occupancy,Avg Nightly Rate,Monthly Revenue,Guest Rating,Maintenance Cost,Guest Complaints
 Beach House A,92,310,8560,4.8,620,2
@@ -17,6 +18,7 @@ Oceanview Condo,90,245,6620,4.3,1260,7
 Historic Home,72,340,7340,4.7,860,3
 Creekside House,84,275,6930,4.5,690,4`;
 const question = 'Which properties need the most management attention, and what should Coastal Life prioritize to improve performance?';
+it('preserves the supplied Coastal Life CSV exactly', () => { expect(coastalDataset).toBe(coastal); });
 const click = name => fireEvent.click(screen.getByRole('button', { name }));
 const fill = (label, value) => fireEvent.change(screen.getByLabelText(label), { target: { value } });
 const stored = () => JSON.parse(localStorage.getItem(ANALYSIS_KEY));
@@ -246,7 +248,7 @@ describe('Analysis workflow', () => {
 
 it('Research guidance follows each verification status', () => {
   window.history.replaceState(null, '', '#/research'); render(<App />); click(/Add research record/);
-  const select = screen.getByRole('combobox');
+  const select = screen.getByLabelText(/Verification status/);
   const guidance = select.parentElement.querySelector('small');
   for (const [status, text] of [['Pending','verification is incomplete'], ['Verified','supports the full claim'], ['Partly verified','only part of the claim'], ['Not verified','does not adequately support']]) {
     fireEvent.change(select, { target: { value: status } }); expect(guidance).toHaveTextContent(text);

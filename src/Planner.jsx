@@ -1,3 +1,4 @@
+import { t } from './i18n.js';
 import { useEffect, useRef, useState } from 'react';
 import { completionTiming, localDate, formatHours, priorities, summarize, taskStatus, validateTask } from './planner.js';
 import { dependencyIssues, duplicateTask } from './planningSupport.js';
@@ -5,6 +6,7 @@ import { DependencyPicker } from './PlanningControls.jsx';
 import { CapacitySummary } from './PlanningSummary.jsx';
 import AITaskImport from './AITaskImport.jsx';
 import AIPlanning from './AIPlanning.jsx';
+import WorkspaceIntro from './WorkspaceIntro.jsx';
 
 const blankTask = () => ({ title: '', category: '', dueDate: '', hours: '', priority: 'Medium', notes: '', completed: false, dependencies: [] });
 const displayDate = value => new Date(`${value}T12:00:00`).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
@@ -60,18 +62,19 @@ export default function Planner({ dashboard }) {
   return (
     <main className="page planner-page" id="main-content" tabIndex="-1">
       <div className="page-heading">
-        <div><div className="eyebrow">Week 2 · Planning, Priorities & Workload</div><h1>Planner / Tasks</h1><p>Make room for what matters. Review deadlines, effort, and your priorities.</p></div>
-        <button ref={addButton} className="primary-button" disabled={!!taskError || !!draft} onClick={() => { setDraft(blankTask()); setError(''); setMessage(''); setDeleting(null); }}>+ Add task</button>
+        <div><div className="eyebrow">{t("Week 2 · Planning, Priorities & Workload")}</div><h1>{t("Planner / Tasks")}</h1><p>{t("Make room for what matters. Review deadlines, effort, and your priorities.")}</p></div>
+        <button ref={addButton} className="primary-button" disabled={!!taskError || !!draft} onClick={() => { setDraft(blankTask()); setError(''); setMessage(''); setDeleting(null); }}>{t("+ Add task")}</button>
       </div>
-      {taskError && <p className="error-message" role="alert">{taskError}</p>}
-      {error && <p className="error-message" role="alert">{error}</p>}
-      {message && <p className="success-message" role="status">{message}</p>}
+      <WorkspaceIntro>{t("Add an assignment, its due date, and estimated effort. Set your priorities, review workload, and mark finished work complete. Use Analysis later to review completion patterns.")}</WorkspaceIntro>
+      {taskError && <p className="error-message" role="alert">{t(taskError)}</p>}
+      {error && <p className="error-message" role="alert">{t(error)}</p>}
+      {message && <p className="success-message" role="status">{t(message)}</p>}
 
-      <div className="summary-grid" aria-label="Task overview">
-        <div className="summary-card"><span>Upcoming, including today</span><strong>{summary.upcoming}</strong><small>Unfinished tasks</small></div>
-        <div className="summary-card"><span>Overdue</span><strong className={summary.overdue ? 'danger-text' : ''}>{summary.overdue}</strong><small>{formatHours(summary.overdueHours)} hours outstanding</small></div>
-        <div className="summary-card"><span>Completed</span><strong>{summary.completed}</strong><small>Ready to review or reopen</small></div>
-        <div className="summary-card"><span>Total remaining workload</span><strong>{formatHours(summary.totalHours)} <small>hrs</small></strong><small>All unfinished tasks</small></div>
+      <div className="summary-grid" aria-label={t("Task overview")}>
+        <div className="summary-card"><span>{t("Upcoming, including today")}</span><strong>{summary.upcoming}</strong><small>{t("Unfinished tasks")}</small></div>
+        <div className="summary-card"><span>{t("Overdue")}</span><strong className={summary.overdue ? 'danger-text' : ''}>{summary.overdue}</strong><small>{formatHours(summary.overdueHours)}{t(" hours outstanding")}</small></div>
+        <div className="summary-card"><span>{t("Completed")}</span><strong>{summary.completed}</strong><small>{t("Ready to review or reopen")}</small></div>
+        <div className="summary-card"><span>{t("Total remaining workload")}</span><strong>{formatHours(summary.totalHours)} <small>{t("hrs")}</small></strong><small>{t("All unfinished tasks")}</small></div>
       </div>
 
       <div className="ai-workflows">
@@ -80,65 +83,65 @@ export default function Planner({ dashboard }) {
       </div>
 
       {draft && <section className="panel task-editor" aria-labelledby="editor-title">
-        <h2 id="editor-title">{draft.id ? 'Edit task' : 'Add a task or assignment'}</h2>
-        <p className="muted">Title, due date, hours, and priority are required. Estimates can be revised.</p>
+        <h2 id="editor-title">{draft.id ? t('Edit task') : t('Add a task or assignment')}</h2>
+        <p className="muted">{t("Title, due date, hours, and priority are required. Estimates can be revised.")}</p>
         <form onSubmit={save}>
           <div className="task-form-grid">
-            <label className="span-two">Task title<input ref={titleInput} name="title" value={draft.title} onChange={field} required maxLength={160} /></label>
-            <label>Course / project / category (optional)<input name="category" value={draft.category} onChange={field} maxLength={100} /></label>
-            <label>Due date<input name="dueDate" type="date" value={draft.dueDate} onChange={field} min="1900-01-01" max="9999-12-31" required /><small>Due through the end of this date, in your local time.</small></label>
-            {draft.completed && <label>Completed On<input name="completedOn" type="date" value={draft.completedOn || ''} onChange={field} min="1900-01-01" max="9999-12-31" /><small>Enter the actual local calendar date. Leave blank if not recorded.</small></label>}
-            <label>Estimated remaining hours<input name="hours" type="number" min="0" max="1000" step="any" value={draft.hours} onChange={field} required /><small>Decimals are welcome, e.g. 0.5 for 30 minutes.</small></label>
-            <label>Priority<select name="priority" value={draft.priority} onChange={field}>{priorities.map(value => <option key={value}>{value}</option>)}</select></label>
-            <label className="span-two">Brief notes (optional)<textarea name="notes" value={draft.notes} onChange={field} rows={3} maxLength={1000} /></label>
+            <label className="span-two">{t("Task title")}<input ref={titleInput} name="title" value={draft.title} onChange={field} required maxLength={160} /></label>
+            <label>{t("Course / project / category (optional)")}<input name="category" value={draft.category} onChange={field} maxLength={100} /></label>
+            <label>{t("Due date")}<input name="dueDate" type="date" value={draft.dueDate} onChange={field} min="1900-01-01" max="9999-12-31" required /><small>{t("Due through the end of this date, in your local time.")}</small></label>
+            {draft.completed && <label>{t("Completed On")}<input name="completedOn" type="date" value={draft.completedOn || ''} onChange={field} min="1900-01-01" max="9999-12-31" /><small>{t("Enter the actual local calendar date. Leave blank if not recorded.")}</small></label>}
+            <label>{t("Estimated remaining hours")}<input name="hours" type="number" min="0" max="1000" step="any" value={draft.hours} onChange={field} required /><small>{t("Decimals are welcome, e.g. 0.5 for 30 minutes.")}</small></label>
+            <label>{t("Priority")}<select name="priority" value={draft.priority} onChange={field}>{priorities.map(value => <option key={value} value={value}>{t(value)}</option>)}</select></label>
+            <label className="span-two">{t("Brief notes (optional)")}<textarea name="notes" value={draft.notes} onChange={field} rows={3} maxLength={1000} /></label>
           </div>
           <DependencyPicker tasks={tasks} value={draft.dependencies || []} currentId={draft.id} onChange={dependencies => setDraft({ ...draft, dependencies })} />
-          <div className="form-actions"><button type="button" className="secondary-button" onClick={closeForm}>Cancel</button><button className="primary-button" type="submit">Save task</button></div>
+          <div className="form-actions"><button type="button" className="secondary-button" onClick={closeForm}>{t("Cancel")}</button><button className="primary-button" type="submit">{t("Save task")}</button></div>
         </form>
       </section>}
 
       <div className="planner-columns">
         <section className="panel tasks-panel" aria-labelledby="tasks-title">
-          <div className="panel-heading"><h2 id="tasks-title">Your tasks</h2><span className="muted">{visible.length} shown</span></div>
+          <div className="panel-heading"><h2 id="tasks-title">{t("Your tasks")}</h2><span className="muted">{visible.length}{t(" shown")}</span></div>
           <div className="task-toolbar">
-            <label>Show<select value={filter} onChange={event => { setFilter(event.target.value); setDeleting(null); }}>{['All', 'Upcoming', 'Overdue', 'Completed'].map(value => <option key={value}>{value}</option>)}</select></label>
-            <label>Sort by<select value={sort} onChange={event => setSort(event.target.value)}><option value="deadline">Deadline first</option><option value="priority">Priority first</option></select></label>
+            <label>{t("Show")}<select value={filter} onChange={event => { setFilter(event.target.value); setDeleting(null); }}>{['All', 'Upcoming', 'Overdue', 'Completed'].map(value => <option key={value} value={value}>{t(value)}</option>)}</select></label>
+            <label>{t("Sort by")}<select value={sort} onChange={event => setSort(event.target.value)}><option value="deadline">{t("Deadline first")}</option><option value="priority">{t("Priority first")}</option></select></label>
           </div>
-          {!visible.length ? <div className="empty-state"><h3>{tasks.length ? 'No tasks in this view' : 'A clear place to start'}</h3><p>{tasks.length ? 'Choose another view to see your tasks.' : 'Add an assignment, estimate the effort, and choose its priority. Your plan starts here.'}</p></div> :
+          {!visible.length ? <div className="empty-state"><h3>{tasks.length ? t('No tasks in this view') : t('A clear place to start')}</h3><p>{tasks.length ? t('Choose another view to see your tasks.') : t('Add an assignment, estimate the effort, and choose its priority. Your plan starts here.')}</p></div> :
             <ul className="task-list">{visible.map(task => {
               const status = taskStatus(task, today);
               const timing = completionTiming(task);
               return <li key={task.id} className={`task-item ${task.completed ? 'is-complete' : ''}`}>
-                <div className="task-title-row"><h3>{task.title}</h3><span className={`priority priority-${task.priority.toLowerCase()}`}>{task.priority} priority</span></div>
+                <div className="task-title-row"><h3>{task.title}</h3><span className={`priority priority-${task.priority.toLowerCase()}`}>{t(task.priority)}{t(" priority")}</span></div>
                 {task.category && <p className="task-category">{task.category}</p>}
-                <div className="task-meta"><span className={`status status-${status.toLowerCase().replace(' ', '-')}`}>{status}</span><span>Due {displayDate(task.dueDate)}</span><span>{formatHours(task.hours)} hrs estimated</span></div>
+                <div className="task-meta"><span className={`status status-${status.toLowerCase().replace(' ', '-')}`}>{t(status)}</span><span>{t("Due ")}{displayDate(task.dueDate)}</span><span>{formatHours(task.hours)}{t(" hrs estimated")}</span></div>
                 {task.notes && <p className="task-notes">{task.notes}</p>}
-                {task.completed && <p>{task.completedOn ? `Completed On ${displayDate(task.completedOn)}` : 'Completion date not recorded'}{timing && ` · ${timing.classification} · ${timing.days} calendar days${timing.classification === 'On Time' ? ' early/late' : ` ${timing.classification.toLowerCase()}`}`}. Edit to update the completion date.</p>}
-                {issues.some(issue => issue.taskId === task.id) && <ul className="review-flags">{issues.filter(issue => issue.taskId === task.id).map((issue, index) => <li key={index}>{issue.message}</li>)}</ul>}
+                {task.completed && <p>{task.completedOn ? t(`Completed On ${displayDate(task.completedOn)}`) : t('Completion date not recorded')}{timing && t(` · ${t(timing.classification)} · ${timing.days} calendar days${timing.classification === 'On Time' ? ` ${t('early/late')}` : ` ${t(timing.classification.toLowerCase())}`}`)}{t(". Edit to update the completion date.")}</p>}
+                {issues.some(issue => issue.taskId === task.id) && <ul className="review-flags">{issues.filter(issue => issue.taskId === task.id).map((issue, index) => <li key={index}>{t(issue.message)}</li>)}</ul>}
                 <div className="task-actions">
-                  <label className="completion-control"><input type="checkbox" checked={task.completed} disabled={!!draft} onChange={() => commit(tasks.map(item => item.id === task.id ? { ...item, completed: !item.completed, completedOn: item.completed ? '' : localDate() } : item), task.completed ? 'Task reopened.' : 'Task completed.')} aria-label={`Mark ${task.title} ${task.completed ? 'incomplete' : 'complete'}`} />{task.completed ? 'Completed' : 'Mark complete'}</label>
-                  <button className="text-button" disabled={!!draft} onClick={() => { setDraft({ ...task }); setError(''); setMessage(''); setDeleting(null); }} aria-label={`Edit ${task.title}`}>Edit</button>
-                  <button className="text-button" disabled={!!draft} onClick={() => { setDraft(duplicateTask(task)); setError(''); setMessage('Duplicate draft: choose a new due date and revise any details before saving.'); setDeleting(null); }} aria-label={`Duplicate ${task.title}`}>Duplicate task</button>
-                  <button className="remove-button" disabled={!!draft} onClick={() => { setDeleting(task.id); setMessage(''); }} aria-label={`Delete ${task.title}`}>Delete</button>
+                  <label className="completion-control"><input type="checkbox" checked={task.completed} disabled={!!draft} onChange={() => commit(tasks.map(item => item.id === task.id ? { ...item, completed: !item.completed, completedOn: item.completed ? '' : localDate() } : item), task.completed ? 'Task reopened.' : 'Task completed.')} aria-label={t(`Mark ${task.title} ${task.completed ? 'incomplete' : 'complete'}`)} />{task.completed ? t('Completed') : t('Mark complete')}</label>
+                  <button className="text-button" disabled={!!draft} onClick={() => { setDraft({ ...task }); setError(''); setMessage(''); setDeleting(null); }} aria-label={t(`Edit ${task.title}`)}>{t("Edit")}</button>
+                  <button className="text-button" disabled={!!draft} onClick={() => { setDraft(duplicateTask(task)); setError(''); setMessage('Duplicate draft: choose a new due date and revise any details before saving.'); setDeleting(null); }} aria-label={t(`Duplicate ${task.title}`)}>{t("Duplicate task")}</button>
+                  <button className="remove-button" disabled={!!draft} onClick={() => { setDeleting(task.id); setMessage(''); }} aria-label={t(`Delete ${task.title}`)}>{t("Delete")}</button>
                 </div>
-                {deleting === task.id && <div className="delete-confirmation"><p>Delete “{task.title}”? This cannot be undone.</p>{tasks.some(item => item.dependencies?.includes(task.id)) && <p>Other tasks require this prerequisite. Deleting it will leave a missing-reference warning until you revise those dependencies.</p>}<button className="remove-button" onClick={() => { if (commit(tasks.filter(item => item.id !== task.id), 'Task deleted.')) { setDeleting(null); addButton.current?.focus(); } }}>Confirm delete</button><button className="secondary-button" onClick={() => setDeleting(null)}>Keep task</button></div>}
+                {deleting === task.id && <div className="delete-confirmation"><p>{t("Delete “")}{task.title}{t("”? This cannot be undone.")}</p>{tasks.some(item => item.dependencies?.includes(task.id)) && <p>{t("Other tasks require this prerequisite. Deleting it will leave a missing-reference warning until you revise those dependencies.")}</p>}<button className="remove-button" onClick={() => { if (commit(tasks.filter(item => item.id !== task.id), 'Task deleted.')) { setDeleting(null); addButton.current?.focus(); } }}>{t("Confirm delete")}</button><button className="secondary-button" onClick={() => setDeleting(null)}>{t("Keep task")}</button></div>}
               </li>;
             })}</ul>}
         </section>
 
-        <aside className="planning-sidebar" aria-label="Planning overview">
+        <aside className="planning-sidebar" aria-label={t("Planning overview")}>
           <section className="panel workload-panel"><CapacitySummary tasks={tasks} today={today} planning={planning} /></section>
-          <section className="panel" aria-labelledby="week-workload"><h2 id="week-workload">Next 7 days</h2><p className="muted">Estimated hours grouped by due date, not scheduled work sessions.</p>
+          <section className="panel" aria-labelledby="week-workload"><h2 id="week-workload">{t("Next 7 days")}</h2><p className="muted">{t("Estimated hours grouped by due date, not scheduled work sessions.")}</p>
             <ul className="workload-days">{summary.days.map(day => <li key={day.date}>
-              <div><span>{day.date === today ? 'Today' : new Date(`${day.date}T12:00:00`).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</span><strong>{formatHours(day.hours)} hrs · {day.count} {day.count === 1 ? 'task' : 'tasks'}</strong></div>
+              <div><span>{day.date === today ? t('Today') : new Date(`${day.date}T12:00:00`).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</span><strong>{formatHours(day.hours)}{t(" hrs · ")}{day.count} {day.count === 1 ? t('task') : t('tasks')}</strong></div>
               <div className="workload-track" aria-hidden="true"><span style={{ width: `${day.hours / Math.max(1, ...summary.days.map(item => item.hours)) * 100}%` }} /></div>
-              {day.clustered && <small className="deadline-cluster">Deadlines clustered: 3+ on this date</small>}
+              {day.clustered && <small className="deadline-cluster">{t("Deadlines clustered: 3+ on this date")}</small>}
             </li>)}</ul>
           </section>
-          <section className="panel planning-support"><h2>Planning Support</h2><p>AI proposes → dashboard checks → student evaluates → student decides.</p><p>Use the two prompt features above with your approved external AI tool. Review its assumptions and change its recommendations when needed.</p><p>Parsing, dependency checks, workload totals, sorting, and duplication are ordinary rules, not AI. Priority is importance; sequence also depends on prerequisites and available time.</p></section>
+          <section className="panel planning-support"><h2>{t("Planning Support")}</h2><p>{t("AI proposes → dashboard checks → student evaluates → student decides.")}</p><p>{t("Use the two prompt features above with your approved external AI tool. Review its assumptions and change its recommendations when needed.")}</p><p>{t("Parsing, dependency checks, workload totals, sorting, and duplication are ordinary rules, not AI. Priority is importance; sequence also depends on prerequisites and available time.")}</p></section>
         </aside>
       </div>
-      <p className="storage-note">Saved only in this browser on this device. Clearing site data removes your profile and tasks. No account or cloud sync.</p>
+      <p className="storage-note">{t("Saved only in this browser on this device. Clearing site data removes your profile and tasks. No account or cloud sync.")}</p>
     </main>
   );
 }
