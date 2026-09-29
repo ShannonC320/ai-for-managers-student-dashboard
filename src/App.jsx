@@ -454,15 +454,14 @@ export default function App() {
           >
             <span aria-hidden="true">⇄</span>{t(" Workflows")}</button>
           <button className={activePage === 'assistant' ? 'nav-item active' : 'nav-item'}
-            onClick={() => navigate('assistant')} aria-current={activePage === 'assistant' ? 'page' : undefined}>{t("AI Assistant")}</button>
+            onClick={() => navigate('assistant')} aria-current={activePage === 'assistant' ? 'page' : undefined}><span aria-hidden="true">🗨</span>{t("AI Assistant")}</button>
           <button className={activePage === 'final' ? 'nav-item active' : 'nav-item'}
-            onClick={() => navigate('final')} aria-current={activePage === 'final' ? 'page' : undefined}>{t('Final Integration')}</button>
+            onClick={() => navigate('final')} aria-current={activePage === 'final' ? 'page' : undefined}><span aria-hidden="true">✓</span>{t('Final Integration')}</button>
         </nav>
 
         <div className="week-badge">
           <span>{t("Course workspace")}</span>
           <strong>{t("Weeks 1–7 of 7")}</strong>
-          <p>{t("Map. Automate. Control. Test.")}</p>
         </div>
       </aside>
 

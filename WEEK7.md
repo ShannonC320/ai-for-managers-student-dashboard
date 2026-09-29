@@ -25,16 +25,20 @@ The approved Oceanview Condo ceiling-staining scenario includes the uncertain cu
 
 Four parts capture the student's judgment:
 
-1. Classify reported facts, unknown current conditions, and system capabilities/limits.
-2. Review the prior note, metrics, workflow routing, and Grace's approved information.
+1. Answer one question about the most important unresolved issue: current water or moisture conditions.
+2. Answer one question about what the available information and AI tools can establish.
 3. Choose a human-control approach and briefly justify it.
-4. Record the next action, brief reason, and human accountability.
+4. Record the next action and reason in one combined response, then select human accountability.
 
-Only three short written responses are required, each limited to 400 characters. Selected choices are also displayed as wrapping text so their full wording remains readable at narrow widths. Completing the application checks completeness, not whether one final action is universally correct. Assessment performance never gates access. Completed work stays editable.
+The first two questions provide immediate, revisable feedback explaining the need for current physical verification. Only two short written responses are required, each limited to 400 characters. Selected choices are also displayed as wrapping text so their full wording remains readable at narrow widths. Completing the application checks completeness, not whether one final action is universally correct. Sections 3–4 are not scored right/wrong. Assessment performance never gates access. Completed work stays editable.
+
+The persistent sidebar footer contains only Course workspace and Weeks 1–7 of 7. AI Assistant has a chat icon and Final Integration a checkmark, using the existing decorative icon spans and responsive behavior.
 
 ## Storage and translation
 
 `ai-managers-final-integration-v1` stores a version-1 envelope with current assessment answers, the latest submitted answer snapshot and result, Coastal Life responses, and completion state. Draft changes save immediately. Editing completed Coastal Life work marks it as a draft until saved complete again. Storage failures are reported and can be retried; unreadable or unsupported saved records are preserved and not overwritten.
+
+Earlier Coastal Life records remain readable. Original fields are retained; the old decision and reason are shown in a collapsed disclosure and combined into the new field when they fit within 400 characters. Longer originals are never truncated. Earlier completed work becomes a draft for the revised questions, without changing the stored record until the student edits or saves. Language switching does not write or translate that text.
 
 English/Spanish content in `finalIntegrationContent.js` joins the existing `spanish.js` dictionary and `t()` display architecture. Stable IDs and numeric choices are stored, never translated labels. Student text is never translated. Switching language preserves current answers, submitted results, and Coastal Life responses.
 
@@ -42,6 +46,6 @@ English/Spanish content in `finalIntegrationContent.js` joins the existing `span
 
 The Week 7 test file explicitly covers all eight four-choice scenarios; navigation/progress and workspace separation; incomplete submission; correctness/explanations; all capability mappings; repeated single-answer revisions; draft and submitted persistence across remount/navigation; editable Coastal Life completion; translation without data mutation; and storage-failure protection.
 
-Validation on September 29, 2026: all **157 tests across 12 files passed**, including the 151 existing W1–W6/Grace/Worker regressions, and the Vite production build passed. Browser verification covered desktop 1280×900 and narrow 390×844 / 320×800 layouts, no horizontal page overflow, labeled native controls, keyboard assessment operation, a 7/8 → 8/8 individual-answer revision and reload, Spanish translation, and Coastal Life completion. Worker source is unchanged and requires no deployment.
+Validation on September 29, 2026: all **160 tests across 12 files passed**, including the 151 existing W1–W6/Grace/Worker regressions, and the Vite production build passed. Week 7 tests cover the simplified questions, immediate feedback, two-field writing structure, original and revised record persistence, no truncation of earlier text, bilingual behavior, navigation icons/footer, and the unchanged eight-question assessment with individual-answer revision. Worker source is unchanged and requires no deployment.
 
 GitHub Pages deployment and live verification are reported with the final delivery.

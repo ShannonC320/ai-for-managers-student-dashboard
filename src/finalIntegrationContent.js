@@ -34,15 +34,17 @@ export const copy = {
   grace: pair('Grace can provide approved information about responsibilities, procedures, authority, and when human involvement is required. Grace cannot inspect the property, establish the physical cause of the staining, or own the management decision.', 'Grace puede proporcionar información aprobada sobre responsabilidades, procedimientos, autoridad y cuándo se requiere intervención humana. Grace no puede inspeccionar la propiedad, establecer la causa física de las manchas ni asumir la decisión de gestión.'),
   question: pair('Is there an active water or moisture problem now?', '¿Hay un problema activo de agua o humedad ahora?'),
   situation: pair('1. Management Situation Assessment', '1. Evaluación de la situación de gestión'),
-  classify: pair('Classify each statement using the supplied information.', 'Clasifica cada afirmación usando la información proporcionada.'),
   information: pair('2. Information & AI Review', '2. Revisión de información e IA'),
-  informationHelp: pair('Choose how you would use each source or capability in this case. No previous workspace records are copied here.', 'Elige cómo usarías cada fuente o capacidad en este caso. Aquí no se copian registros anteriores del espacio de trabajo.'),
   human: pair('3. Human-Control Decision', '3. Decisión de control humano'),
   humanLabel: pair('Where will you apply human control?', '¿Dónde aplicarás el control humano?'),
   justification: pair('Briefly justify your intervention or review point', 'Justifica brevemente tu intervención o punto de revisión'),
   final: pair('4. Final Management Decision & Accountability', '4. Decisión final de gestión y responsabilidad'),
   action: pair('Your final management decision / next action', 'Tu decisión final de gestión / próxima acción'),
   reason: pair('Brief reason, including uncertainty or verification needed', 'Razón breve, incluida la incertidumbre o verificación necesaria'),
+  decision: pair('State your final management decision / next action and briefly explain why.', 'Indica tu decisión final de gestión / próxima acción y explica brevemente por qué.'),
+  priorResponses: pair('Your earlier decision and reason (preserved)', 'Tu decisión y razón anteriores (conservadas)'),
+  priorHelp: pair('Your earlier text is preserved here. Use the combined field above for your revised response; keep it within 400 characters.', 'Tu texto anterior se conserva aquí. Usa el campo combinado de arriba para tu respuesta revisada; limítala a 400 caracteres.'),
+  checkAgain: pair('Review this answer', 'Revisa esta respuesta'),
   accountable: pair('Who remains accountable for the management decision?', '¿Quién sigue siendo responsable de la decisión de gestión?'),
   choose: pair('Choose a response', 'Elige una respuesta'),
   short: pair('Keep each written response to one or two sentences (maximum 400 characters).', 'Limita cada respuesta escrita a una o dos frases (máximo 400 caracteres).'),
@@ -87,18 +89,29 @@ export const questions = [
   ], 2, ['AI support does not transfer managerial accountability. Humans must evaluate, approve, and own their decisions.', 'El apoyo de IA no transfiere la responsabilidad gerencial. Las personas deben evaluar, aprobar y asumir sus decisiones.']),
 ];
 const option = (id, en, es) => ({ id, label: pair(en, es) });
-export const classifications = [option('known', 'Known from the supplied report', 'Conocido por el informe proporcionado'), option('unknown', 'Not established by the supplied information', 'No establecido por la información proporcionada'), option('can', 'Within the system’s capabilities', 'Dentro de las capacidades del sistema'), option('cannot', 'Beyond the system’s capabilities', 'Fuera de las capacidades del sistema')];
-export const statements = [
-  option('stain', 'The guest reports darker ceiling staining.', 'El huésped informa de manchas más oscuras en el techo.'),
-  option('moisture', 'There is active moisture now.', 'Hay humedad activa ahora.'),
-  option('route', 'The workflow can document and route the issue.', 'El flujo puede documentar y derivar el problema.'),
-  option('diagnose', 'Grace can determine the physical cause remotely.', 'Grace puede determinar la causa física a distancia.'),
-];
-export const reviews = [
-  { id: 'researchReview', label: pair('Research & Verification — prior inspection note', 'Investigación y verificación — nota de inspección anterior'), options: [option('verify', 'Useful context; verify current conditions separately.', 'Contexto útil; verificar las condiciones actuales por separado.'), option('conclusive', 'Conclusive evidence of the current condition.', 'Evidencia concluyente de la condición actual.')] },
-  { id: 'analysisReview', label: pair('Data Analysis & Decision Support — property metrics', 'Análisis de datos y apoyo a las decisiones — métricas de la propiedad'), options: [option('cause', 'The metrics establish the cause of this staining.', 'Las métricas establecen la causa de estas manchas.'), option('pattern', 'Useful pattern for attention; not proof of this cause.', 'Patrón útil para orientar la atención; no prueba esta causa.')] },
-  { id: 'workflowReview', label: pair('Workflow & Automation — routine routing', 'Flujo de trabajo y automatización — derivación rutinaria'), options: [option('route', 'Organizes and routes; a manager may intervene.', 'Organiza y deriva; un gerente puede intervenir.'), option('resolved', 'Establishes that the current issue is resolved.', 'Establece que el problema actual está resuelto.')] },
-  { id: 'graceReview', label: pair('Grace — approved information', 'Grace — información aprobada'), options: [option('decision', 'Can inspect the condition and own the decision.', 'Puede inspeccionar la condición y asumir la decisión.'), option('bounded', 'Can explain approved procedures and authority, not diagnose the property.', 'Puede explicar procedimientos y autoridad aprobados, no diagnosticar la propiedad.')] },
+export const coastalChecks = [
+  {
+    id: 'problem',
+    label: pair('What is the most important unresolved issue in this situation?', '¿Cuál es el asunto pendiente más importante en esta situación?'),
+    options: [
+      option('prior', 'Whether an active leak was found during the prior inspection.', 'Si se encontró una fuga activa durante la inspección anterior.'),
+      option('current', 'Whether there is an active water or moisture problem now.', 'Si hay un problema activo de agua o humedad ahora.'),
+      option('routing', 'Which route the workflow initially assigned to the issue.', 'Qué ruta asignó inicialmente el flujo al problema.'),
+    ],
+    correct: 'current',
+    feedback: pair('The guest report and prior information do not establish the property’s current physical condition. The key uncertainty is whether water or moisture is active now.', 'El informe del huésped y la información anterior no establecen la condición física actual de la propiedad. La incertidumbre clave es si hay agua o humedad activa ahora.'),
+  },
+  {
+    id: 'information',
+    label: pair('Which statement best describes what the available information and AI-enabled tools can establish in this situation?', '¿Qué afirmación describe mejor lo que la información disponible y las herramientas con IA pueden establecer en esta situación?'),
+    options: [
+      option('safe', 'The prior note and routine route establish that the current staining is harmless.', 'La nota anterior y la derivación rutinaria establecen que las manchas actuales son inofensivas.'),
+      option('cause', 'The property metrics and Grace establish the physical cause without a current inspection.', 'Las métricas de la propiedad y Grace establecen la causa física sin una inspección actual.'),
+      option('limits', 'They inform judgment, but do not establish current water or moisture conditions or the physical cause.', 'Orientan el criterio, pero no establecen las condiciones actuales de agua o humedad ni la causa física.'),
+    ],
+    correct: 'limits',
+    feedback: pair('The prior note, metrics, workflow, and Grace offer context, patterns, process support, and approved information. They inform judgment; current physical verification is still needed to establish moisture conditions and investigate the cause.', 'La nota anterior, las métricas, el flujo y Grace ofrecen contexto, patrones, apoyo al proceso e información aprobada. Orientan el criterio; aún se necesita verificación física actual para establecer las condiciones de humedad e investigar la causa.'),
+  },
 ];
 export const interventions = [option('verify', 'Arrange human verification of current conditions.', 'Organizar la verificación humana de las condiciones actuales.'), option('escalate', 'Escalate for authorized management review.', 'Derivar para revisión gerencial autorizada.'), option('monitor', 'Retain routine routing with a defined human follow-up point.', 'Mantener la derivación rutinaria con un punto definido de seguimiento humano.'), option('other', 'Another human-control approach (explain below).', 'Otro enfoque de control humano (explica abajo).')];
 export const owners = [option('manager', 'I remain accountable as the Operations Manager.', 'Sigo siendo responsable como gerente de operaciones.'), option('authorized', 'An authorized human manager remains accountable; I will arrange the handoff.', 'Un gerente humano autorizado sigue siendo responsable; organizaré el traspaso.')];

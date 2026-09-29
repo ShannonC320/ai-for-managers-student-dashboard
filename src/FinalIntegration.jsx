@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { t } from './i18n.js';
 import WorkspaceIntro from './WorkspaceIntro.jsx';
-import { copy, questions, capabilities, statements, classifications, reviews, interventions, owners } from './finalIntegrationContent.js';
+import { copy, questions, capabilities, coastalChecks, interventions, owners } from './finalIntegrationContent.js';
 import { FINAL_KEY, readFinal, assess, coastalComplete } from './finalIntegration.js';
 
 export default function FinalIntegration() {
@@ -35,6 +35,15 @@ export default function FinalIntegration() {
   }
   function text(id, label) {
     return <label className="final-field" htmlFor={`final-${id}`}>{t(label)}<textarea id={`final-${id}`} rows="2" maxLength={400} value={data.coastal[id] || ''} onChange={e => updateCoastal(id, e.target.value)} /></label>;
+  }
+  function coastalCheck(check, heading) {
+    const answer = data.coastal[check.id];
+    return <fieldset className="final-question"><legend>{t(heading)}</legend>
+      {select(check.id, check.label, check.options)}
+      {answer && <div className="final-feedback" role="status" data-testid={`coastal-feedback-${check.id}`}>
+        <strong>{t(answer === check.correct ? copy.correct : copy.checkAgain)}</strong><p>{t(check.feedback)}</p>
+      </div>}
+    </fieldset>;
   }
   return <main className="page final-page" id="main-content" tabIndex="-1">
     <div className="page-heading"><div><div className="eyebrow">{t(copy.eyebrow)}</div><h1>{t(copy.nav)}</h1><p>{t(copy.intro)}</p></div></div>
@@ -73,10 +82,14 @@ export default function FinalIntegration() {
       <p>{t(copy.short)}</p>
       <form onSubmit={event => { event.preventDefault(); if (!coastalComplete(data.coastal)) { setCoastalError(true); return; } setCoastalError(false); save({ ...data, coastalCompleted: true }); }}>
         <fieldset className="final-controls" disabled={initial.error}>
-          <fieldset className="final-question"><legend>{t(copy.situation)}</legend><p>{t(copy.classify)}</p>{statements.map(s => select(s.id, s.label, classifications))}</fieldset>
-          <fieldset className="final-question"><legend>{t(copy.information)}</legend><p>{t(copy.informationHelp)}</p>{reviews.map(r => select(r.id, r.label, r.options))}</fieldset>
+          {coastalCheck(coastalChecks[0], copy.situation)}
+          {coastalCheck(coastalChecks[1], copy.information)}
           <fieldset className="final-question"><legend>{t(copy.human)}</legend>{select('intervention', copy.humanLabel, interventions)}{text('justification', copy.justification)}</fieldset>
-          <fieldset className="final-question"><legend>{t(copy.final)}</legend>{text('action', copy.action)}{text('reason', copy.reason)}{select('owner', copy.accountable, owners)}</fieldset>
+          <fieldset className="final-question"><legend>{t(copy.final)}</legend>{text('decision', copy.decision)}
+            {(data.coastal.action || data.coastal.reason) && <details className="final-scenario"><summary>{t(copy.priorResponses)}</summary><p>{t(copy.priorHelp)}</p>
+              <dl><dt>{t(copy.action)}</dt><dd>{data.coastal.action}</dd><dt>{t(copy.reason)}</dt><dd>{data.coastal.reason}</dd></dl>
+            </details>}
+            {select('owner', copy.accountable, owners)}</fieldset>
           <p>{t(copy.principle)}</p>
           {coastalError && <p role="alert">{t(copy.required)}</p>}
           <button type="submit" className="primary-button">{t(copy.save)}</button>
