@@ -10,6 +10,7 @@ import { duplicateTask } from './planningSupport.js';
 const task = (extra = {}) => ({ id: 'one', title: 'Essay', category: '', dueDate: '2026-03-09', hours: 2, priority: 'Medium', notes: '', completed: true, ...extra });
 const click = name => fireEvent.click(screen.getByRole('button', { name }));
 const fill = (label, value) => fireEvent.change(screen.getByLabelText(label), { target: { value } });
+const judgmentLabel = 'After comparing the AI analysis with your actual data and your own context, what does the evidence support, what—if anything—did AI assume, and what will you do (if anything)?';
 beforeEach(() => { localStorage.clear(); window.history.replaceState(null, '', '#/analysis'); });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
@@ -56,15 +57,27 @@ it('shows evidence, saves the prompt and student review, copies, and preserves C
   expect(prompt).toContain('2026-03-07'); expect(prompt).not.toContain('"title": "Open"');
   click('Copy completion-history prompt'); expect(clipboard.writeText).toHaveBeenCalledWith(prompt);
   fill('Paste AI completion-history response', 'One record was early.');
-  fill('What does the evidence actually support?', 'One recorded assignment was two days early.');
-  fill('What did AI infer or assume that the evidence does not establish?', 'Causes are unknown.');
-  fill('Based on the evidence and my own context, what—if anything—will I change?', 'No change yet.');
+  fill(judgmentLabel, 'One assignment was early. Causes are unknown. No change yet.');
   click('Save student analysis'); cleanup(); render(<App />);
   expect(screen.getByLabelText('Paste AI completion-history response')).toHaveValue('One record was early.');
-  expect(screen.getByLabelText('Based on the evidence and my own context, what—if anything—will I change?')).toHaveValue('No change yet.');
+  expect(screen.getByLabelText(judgmentLabel)).toHaveValue('One assignment was early. Causes are unknown. No change yet.');
   expect(localStorage.getItem(ANALYSIS_KEY)).toBe(coastal);
   expect(JSON.parse(localStorage.getItem(STUDENT_ANALYSIS_KEY)).prompt).toBe(prompt);
   vi.unstubAllGlobals();
+});
+
+it('combines legacy review responses without erasing them or restoring them over an edited judgment', () => {
+  const legacy = { version: 1, prompt: 'Saved evidence', response: 'Saved AI response', support: 'Two early records', assumptions: 'Unknown cause', decision: 'No change' };
+  localStorage.setItem(STUDENT_ANALYSIS_KEY, JSON.stringify(legacy)); render(<App />);
+  expect(screen.getByRole('heading', { name: 'REVIEW & DECIDE — Your judgment' })).toBeInTheDocument();
+  const combined = screen.getByLabelText(judgmentLabel).value;
+  for (const text of [legacy.support, legacy.assumptions, legacy.decision]) expect(combined).toContain(text);
+  expect(JSON.parse(localStorage.getItem(STUDENT_ANALYSIS_KEY))).toEqual(legacy);
+  click('Save student analysis'); cleanup(); render(<App />);
+  expect(screen.getByLabelText(judgmentLabel)).toHaveValue(combined);
+  fill(judgmentLabel, ''); click('Save student analysis'); cleanup(); render(<App />);
+  expect(screen.getByLabelText(judgmentLabel)).toHaveValue('');
+  expect(JSON.parse(localStorage.getItem(STUDENT_ANALYSIS_KEY))).toMatchObject(legacy);
 });
 
 it('protects unreadable student data and reports failed saves without losing the draft', () => {

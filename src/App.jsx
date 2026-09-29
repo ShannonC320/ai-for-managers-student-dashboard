@@ -540,7 +540,7 @@ export default function App() {
         ) : activePage === 'assistant' ? (
           <Grace />
         ) : activePage === 'workflows' ? (
-          <Workflows />
+          <Workflows dashboard={dashboard} />
         ) : (
           <Research
             records={dashboard.records}

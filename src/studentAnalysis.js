@@ -1,14 +1,17 @@
 import { completionTiming } from './planner.js';
 
 export const STUDENT_ANALYSIS_KEY = 'ai-managers-student-completion-analysis-v1';
-export const emptyStudentAnalysis = () => ({ version: 1, prompt: '', response: '', support: '', assumptions: '', decision: '' });
+export const emptyStudentAnalysis = () => ({ version: 1, prompt: '', response: '', support: '', assumptions: '', decision: '', judgment: '' });
 
 export function readStudentAnalysis() {
   try {
     const raw = localStorage.getItem(STUDENT_ANALYSIS_KEY);
     const data = raw ? JSON.parse(raw) : emptyStudentAnalysis();
     if (data?.version !== 1 || !['prompt', 'response', 'support', 'assumptions', 'decision'].every(key => typeof data[key] === 'string')) throw new Error('Invalid data');
-    return { data, error: '' };
+    if (data.judgment !== undefined && typeof data.judgment !== 'string') throw new Error('Invalid judgment');
+    const judgment = data.judgment ?? [['Evidence supports', data.support], ['AI assumptions', data.assumptions], ['My decision', data.decision]]
+      .filter(([, value]) => value.trim()).map(([label, value]) => `${label}:\n${value}`).join('\n\n');
+    return { data: { ...data, judgment }, error: '' };
   } catch {
     return { data: emptyStudentAnalysis(), error: 'Saved student analysis could not be read. It has not been overwritten. Restore browser storage access or recover the data, then reload.' };
   }

@@ -47,11 +47,8 @@ export default function StudentAnalysis({ tasks, taskError }) {
       }}>Copy completion-history prompt</button>
     </div>}
     {field('response', 'Paste AI completion-history response', 8)}
-    <h3>REVIEW — Evaluate the AI against the evidence</h3>
-    {field('support', 'What does the evidence actually support?')}
-    {field('assumptions', 'What did AI infer or assume that the evidence does not establish?')}
-    <h3>DECIDE — Your decision</h3>
-    {field('decision', 'Based on the evidence and my own context, what—if anything—will I change?')}
+    <h3>REVIEW &amp; DECIDE — Your judgment</h3>
+    {field('judgment', 'After comparing the AI analysis with your actual data and your own context, what does the evidence support, what—if anything—did AI assume, and what will you do (if anything)?', 6)}
     <button className="primary-button" disabled={!!initial.error} onClick={() => save(data)}>Save student analysis</button>
     <p className="storage-note">Save to keep your AI response, review, and decision in this browser on this device. The generated evidence prompt is also saved.</p>
   </section>;

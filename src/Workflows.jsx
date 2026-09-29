@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import WeeklyBriefing from './WeeklyBriefing.jsx';
 import { ExternalAINotice, PromptOutput } from './PlanningControls.jsx';
 import {
   WORKFLOWS_KEY, HANDLERS, TEST_SITUATIONS, TEST_OUTCOMES, ROUTES, runWorkflow, readWorkflows,
@@ -23,7 +24,7 @@ function AutomationResult({ result }) {
   </dl></section>;
 }
 
-export default function Workflows() {
+export default function Workflows({ dashboard }) {
   const [initial] = useState(readWorkflows);
   const [data, setData] = useState(initial.data);
   const [step, setStep] = useState(null);
@@ -108,6 +109,8 @@ export default function Workflows() {
     {initial.error && <p className="error-message" role="alert">{initial.error}</p>}
     {error && <p className="error-message" role="alert">{error}</p>}
     {message && <p className="success-message" role="status">{message}</p>}
+
+    <WeeklyBriefing tasks={dashboard?.tasks || []} today={dashboard?.today} taskError={dashboard?.taskError} />
 
     <section className="panel" aria-labelledby="workflow-design-title">
       <div className="panel-heading"><div><div className="eyebrow">Map · Control</div><h2 id="workflow-design-title">Guest Issue Response Workflow</h2></div>
