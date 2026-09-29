@@ -1,5 +1,7 @@
 // Interface-only translations. Stored values, source documents and student text stay unchanged.
+import { week7Spanish } from './finalIntegrationContent.js';
 export const spanish = {
+  ...week7Spanish,
   "Mark {0} complete": "Marcar {0} como completada",
   "Mark {0} incomplete": "Marcar {0} como pendiente",
   "Which properties need the most management attention, and what should Coastal Life prioritize to improve performance?": "¿Qué propiedades requieren más atención de la gerencia y qué debería priorizar Coastal Life para mejorar el desempeño?",

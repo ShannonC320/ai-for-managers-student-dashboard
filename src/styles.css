@@ -383,6 +383,19 @@ ul.review-flags { padding-left: 32px; }
 .workflows-page select { max-width: 100%; }
 
 /* Shared orientation and application transitions, within existing weekly pages. */
+.final-controls { border: 0; padding: 0; margin: 0; min-width: 0; }
+.final-question { min-width: 0; margin: 24px 0; padding: 16px; border: 1px solid #cad6dd; border-radius: 8px; }
+.final-question legend { font-weight: 700; padding: 0 6px; line-height: 1.5; }
+.final-option { display: flex; align-items: flex-start; gap: 10px; padding: 12px 4px; cursor: pointer; line-height: 1.5; }
+.final-option input { flex: 0 0 auto; width: 18px; height: 18px; margin: 3px 0; }
+.final-field { display: block; margin: 18px 0; font-weight: 600; line-height: 1.5; }
+.final-field select, .final-field textarea { display: block; width: 100%; min-width: 0; max-width: 100%; margin-top: 8px; }
+.final-selection { margin: 6px 0 0; font-size: .875rem; font-weight: 400; color: #304d5f; }
+.final-page .profile-card { display: block; margin-bottom: 32px; }
+.final-page p, .final-page li { line-height: 1.65; overflow-wrap: anywhere; }
+.final-feedback, .final-result { padding: 16px; margin-top: 16px; background: #edf5f8; border-radius: 8px; }
+.final-feedback p { margin-bottom: 0; }
+.final-scenario summary { cursor: pointer; font-weight: 700; padding: 12px 0; }
 .workspace-intro { margin: 0 0 20px; padding: 16px 20px; border-left: 4px solid #277c82; background: #edf5f8; border-radius: 8px; }
 .workspace-intro h2 { margin: 0 0 8px; font-size: 1rem; }
 .workspace-intro p { margin: 0; line-height: 1.6; }

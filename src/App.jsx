@@ -4,6 +4,7 @@ import Research from './Research.jsx';
 import Analysis from './Analysis.jsx';
 import Workflows from './Workflows.jsx';
 import Grace from './Grace.jsx';
+import FinalIntegration from './FinalIntegration.jsx';
 import useDashboardData from './useDashboardData.js';
 import PlanningSummary from './PlanningSummary.jsx';
 import { LANGUAGE_KEY, readLanguage, setLanguage, t } from './i18n.js';
@@ -21,7 +22,7 @@ const academicYears = ['First year', 'Sophomore', 'Junior', 'Senior', 'Other'];
 
 function pageFromLocation() {
   const page = window.location.hash.slice(2);
-  return ['home', 'profile', 'tasks', 'research', 'analysis', 'workflows', 'assistant'].includes(page) ? page : 'home';
+  return ['home', 'profile', 'tasks', 'research', 'analysis', 'workflows', 'assistant', 'final'].includes(page) ? page : 'home';
 }
 
 function readProfile() {
@@ -337,7 +338,7 @@ export default function App() {
 
   useEffect(() => {
     if (
-      !['#/home', '#/profile', '#/tasks', '#/research', '#/analysis', '#/workflows', '#/assistant'].includes(
+      !['#/home', '#/profile', '#/tasks', '#/research', '#/analysis', '#/workflows', '#/assistant', '#/final'].includes(
         window.location.hash
       )
     ) {
@@ -361,7 +362,7 @@ export default function App() {
   useEffect(() => { document.documentElement.lang = language; }, [language]);
   useEffect(() => {
     document.title = `${t(
-      activePage === 'assistant' ? 'AI Assistant' : activePage === 'workflows' ? 'Workflows' : activePage === 'analysis' ? 'Analysis' : activePage === 'tasks'
+      activePage === 'final' ? 'Final Integration' : activePage === 'assistant' ? 'AI Assistant' : activePage === 'workflows' ? 'Workflows' : activePage === 'analysis' ? 'Analysis' : activePage === 'tasks'
         ? 'Planner'
         : activePage === 'research'
           ? 'Research'
@@ -454,11 +455,13 @@ export default function App() {
             <span aria-hidden="true">⇄</span>{t(" Workflows")}</button>
           <button className={activePage === 'assistant' ? 'nav-item active' : 'nav-item'}
             onClick={() => navigate('assistant')} aria-current={activePage === 'assistant' ? 'page' : undefined}>{t("AI Assistant")}</button>
+          <button className={activePage === 'final' ? 'nav-item active' : 'nav-item'}
+            onClick={() => navigate('final')} aria-current={activePage === 'final' ? 'page' : undefined}>{t('Final Integration')}</button>
         </nav>
 
         <div className="week-badge">
           <span>{t("Course workspace")}</span>
-          <strong>{t("Weeks 1–6 of 7")}</strong>
+          <strong>{t("Weeks 1–7 of 7")}</strong>
           <p>{t("Map. Automate. Control. Test.")}</p>
         </div>
       </aside>
@@ -474,7 +477,7 @@ export default function App() {
           </label>
           <span className="header-location">{t("Student workspace ")}<span aria-hidden="true">/</span>{' '}
             <strong>
-              {activePage === 'assistant' ? t('AI Assistant') : activePage === 'workflows' ? t('Workflows') : activePage === 'analysis' ? t('Analysis') : activePage === 'home'
+              {activePage === 'final' ? t('Final Integration') : activePage === 'assistant' ? t('AI Assistant') : activePage === 'workflows' ? t('Workflows') : activePage === 'analysis' ? t('Analysis') : activePage === 'home'
                 ? t('Home')
                 : activePage === 'profile'
                   ? t('Profile')
@@ -511,6 +514,8 @@ export default function App() {
           <Planner dashboard={dashboard} />
         ) : activePage === 'analysis' ? (
           <Analysis dashboard={dashboard} />
+        ) : activePage === 'final' ? (
+          <FinalIntegration />
         ) : activePage === 'assistant' ? (
           <Grace />
         ) : activePage === 'workflows' ? (

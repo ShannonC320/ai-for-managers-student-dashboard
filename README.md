@@ -1,6 +1,8 @@
-# AI for Managers Student Dashboard — Weeks 1–6
+# AI for Managers Student Dashboard — Weeks 1–7
 
 This React application is a progressively extensible workspace for a seven-week undergraduate business course. Weeks 1–5 remain in place. Week 6 adds Grace, an embedded AI Assistant with a minimal Cloudflare Workers AI backend. Student records remain browser-local; no student accounts or database are used. See [Week 6 setup, verification, and live pilot](WEEK6.md) before enabling the AI service.
+
+Week 7 completes the progression with **Final Integration** (`#/final`), after AI Assistant. The Student Dashboard assessment and Coastal Life Management Application share one tab using the established workspace dividers. Week 7 adds no AI service or capability and does not copy earlier workspace records. See [Week 7 implementation and verification](WEEK7.md).
 
 ## Run it locally
 
